@@ -40,14 +40,14 @@ export default function Header({
           <div className="flex gap-3">
             <button
               onClick={onResetAll}
-              className="flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-accent transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-accent transition-colors cursor-pointer"
             >
               <RotateCcw className="w-4 h-4" />
               Reset All
             </button>
             <button
               onClick={onShareLink}
-              className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors cursor-pointer"
             >
               <Share2 className="w-4 h-4" />
               Share Link

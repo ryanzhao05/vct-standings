@@ -106,8 +106,8 @@ export default function StandingsTable({
                   <span
                     className={`px-2 py-1 text-xs rounded-full ${
                       team.isQualified
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-secondary text-secondary-foreground"
+                        ? "bg-green-500 text-primary-foreground"
+                        : "bg-primary text-primary-foreground"
                     }`}
                   >
                     {team.isQualified ? "Qualified" : "Eliminated"}

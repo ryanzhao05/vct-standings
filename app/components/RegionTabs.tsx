@@ -24,7 +24,7 @@ export default function RegionTabs({
             <button
               key={region.id}
               onClick={() => onRegionChange(region.id)}
-              className={`px-6 py-3 text-sm font-medium rounded-t-lg transition-colors ${
+              className={`px-6 py-3 text-sm font-medium rounded-t-lg transition-colors cursor-pointer ${
                 selectedRegion === region.id
                   ? "bg-background text-foreground border-b-2 border-primary"
                   : "text-gray-400 hover:text-gray-300 hover:bg-accent"
