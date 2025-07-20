@@ -5,6 +5,7 @@ import Header from "./components/Header";
 import RegionTabs from "./components/RegionTabs";
 import StandingsTable from "./components/StandingsTable";
 import MatchSection from "./components/MatchSection";
+import { calculateStandings } from "../lib/standings-calculator";
 
 type Region = "americas" | "emea" | "pacific" | "china";
 
@@ -18,168 +19,22 @@ export default function Home() {
     { id: "china", name: "China" },
   ] as const;
 
-  // Sample data for now
-  const groupAStandings = [
-    {
-      id: "lev",
-      name: "Leviatán",
-      abbreviation: "LEV",
-      position: 1,
-      wins: 1,
-      losses: 0,
-      mapWins: 2,
-      mapLosses: 0,
-      roundWins: 26,
-      roundLosses: 9,
-      isQualified: true,
-    },
-    {
-      id: "eg",
-      name: "Evil Geniuses",
-      abbreviation: "EG",
-      position: 2,
-      wins: 1,
-      losses: 0,
-      mapWins: 2,
-      mapLosses: 1,
-      roundWins: 33,
-      roundLosses: 20,
-      isQualified: true,
-    },
-    {
-      id: "kru",
-      name: "KRÜ Esports",
-      abbreviation: "KRU",
-      position: 3,
-      wins: 0,
-      losses: 0,
-      mapWins: 0,
-      mapLosses: 0,
-      roundWins: 0,
-      roundLosses: 0,
-      isQualified: true,
-    },
-    {
-      id: "loud",
-      name: "LOUD",
-      abbreviation: "LOUD",
-      position: 4,
-      wins: 0,
-      losses: 0,
-      mapWins: 0,
-      mapLosses: 0,
-      roundWins: 0,
-      roundLosses: 0,
-      isQualified: true,
-    },
-    {
-      id: "mibr",
-      name: "MIBR",
-      abbreviation: "MIBR",
-      position: 5,
-      wins: 0,
-      losses: 0,
-      mapWins: 0,
-      mapLosses: 0,
-      roundWins: 0,
-      roundLosses: 0,
-      isQualified: false,
-    },
-    {
-      id: "sen",
-      name: "Sentinels",
-      abbreviation: "SEN",
-      position: 6,
-      wins: 0,
-      losses: 2,
-      mapWins: 0,
-      mapLosses: 3,
-      roundWins: 9,
-      roundLosses: 26,
-      isQualified: false,
-    },
+  const groupAlphaTeams = [
+    { id: "lev", name: "Leviatán", abbreviation: "LEV" },
+    { id: "eg", name: "Evil Geniuses", abbreviation: "EG" },
+    { id: "kru", name: "KRÜ Esports", abbreviation: "KRU" },
+    { id: "loud", name: "LOUD", abbreviation: "LOUD" },
+    { id: "mibr", name: "MIBR", abbreviation: "MIBR" },
+    { id: "sen", name: "Sentinels", abbreviation: "SEN" },
   ];
 
-  // Sample data for now
-  const groupBStandings = [
-    {
-      id: "nrg",
-      name: "NRG Esports",
-      abbreviation: "NRG",
-      position: 1,
-      wins: 1,
-      losses: 0,
-      mapWins: 2,
-      mapLosses: 0,
-      roundWins: 26,
-      roundLosses: 9,
-      isQualified: true,
-    },
-    {
-      id: "c9",
-      name: "Cloud9",
-      abbreviation: "C9",
-      position: 2,
-      wins: 0,
-      losses: 0,
-      mapWins: 0,
-      mapLosses: 0,
-      roundWins: 0,
-      roundLosses: 0,
-      isQualified: true,
-    },
-    {
-      id: "100t",
-      name: "100 Thieves",
-      abbreviation: "100T",
-      position: 3,
-      wins: 0,
-      losses: 1,
-      mapWins: 0,
-      mapLosses: 2,
-      roundWins: 9,
-      roundLosses: 26,
-      isQualified: false,
-    },
-    {
-      id: "furia",
-      name: "FURIA",
-      abbreviation: "FUR",
-      position: 4,
-      wins: 0,
-      losses: 0,
-      mapWins: 0,
-      mapLosses: 0,
-      roundWins: 0,
-      roundLosses: 0,
-      isQualified: true,
-    },
-    {
-      id: "g2",
-      name: "G2 Esports",
-      abbreviation: "G2",
-      position: 5,
-      wins: 0,
-      losses: 0,
-      mapWins: 0,
-      mapLosses: 0,
-      roundWins: 0,
-      roundLosses: 0,
-      isQualified: false,
-    },
-    {
-      id: "liquid",
-      name: "Team Liquid",
-      abbreviation: "TL",
-      position: 6,
-      wins: 0,
-      losses: 0,
-      mapWins: 0,
-      mapLosses: 0,
-      roundWins: 0,
-      roundLosses: 0,
-      isQualified: false,
-    },
+  const groupOmegaTeams = [
+    { id: "nrg", name: "NRG Esports", abbreviation: "NRG" },
+    { id: "c9", name: "Cloud9", abbreviation: "C9" },
+    { id: "100t", name: "100 Thieves", abbreviation: "100T" },
+    { id: "furia", name: "FURIA", abbreviation: "FUR" },
+    { id: "g2", name: "G2 Esports", abbreviation: "G2" },
+    { id: "liquid", name: "Team Liquid", abbreviation: "TL" },
   ];
 
   // Sample match data for Group Alpha
@@ -232,9 +87,24 @@ export default function Home() {
     },
   ]);
 
+  // Calculate standings based on current match predictions
+  const groupAlphaStandings = calculateStandings(
+    groupAlphaTeams,
+    groupAlphaMatches
+  );
+  const groupOmegaStandings = calculateStandings(
+    groupOmegaTeams,
+    groupOmegaMatches
+  );
+
   const handleResetAll = () => {
-    // TODO: Implement reset all functionality
-    console.log("Reset all predictions");
+    // Reset all match predictions
+    setGroupAlphaMatches((prev) =>
+      prev.map((match) => ({ ...match, team1Score: 0, team2Score: 0 }))
+    );
+    setGroupOmegaMatches((prev) =>
+      prev.map((match) => ({ ...match, team1Score: 0, team2Score: 0 }))
+    );
   };
 
   const handleShareLink = () => {
@@ -303,13 +173,13 @@ export default function Home() {
           <StandingsTable
             title="Group Alpha"
             subtitle="Top 4 teams qualify for playoffs"
-            standings={groupAStandings}
+            standings={groupAlphaStandings}
           />
 
           <StandingsTable
             title="Group Omega"
             subtitle="Top 4 teams qualify for playoffs"
-            standings={groupBStandings}
+            standings={groupOmegaStandings}
           />
 
           <MatchSection

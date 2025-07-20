@@ -28,6 +28,10 @@ export default function StandingsTable({
     return diff > 0 ? `+${diff}` : diff < 0 ? `${diff}` : "0";
   };
 
+  const getMapRecord = (team: TeamStanding) => {
+    return `${team.mapWins}-${team.mapLosses}`;
+  };
+
   const getRoundDifferential = (team: TeamStanding) => {
     const diff = team.roundWins - team.roundLosses;
     return diff > 0 ? `+${diff}` : diff < 0 ? `${diff}` : "0";
@@ -64,6 +68,9 @@ export default function StandingsTable({
                 W-L
               </th>
               <th className="text-left py-3 px-2 text-sm font-medium text-gray-400">
+                Map Record
+              </th>
+              <th className="text-left py-3 px-2 text-sm font-medium text-gray-400">
                 Map Diff
               </th>
               <th className="text-left py-3 px-2 text-sm font-medium text-gray-400">
@@ -86,6 +93,9 @@ export default function StandingsTable({
                 <td className="py-3 px-2 text-sm text-white">
                   {team.wins}-{team.losses}
                 </td>
+                <td className="py-3 px-2 text-sm text-white">
+                  {getMapRecord(team)}
+                </td>
                 <td
                   className={`py-3 px-2 text-sm ${getDifferentialColor(
                     team,
@@ -106,8 +116,8 @@ export default function StandingsTable({
                   <span
                     className={`px-2 py-1 text-xs rounded-full ${
                       team.isQualified
-                        ? "bg-green-500 text-primary-foreground"
-                        : "bg-primary text-primary-foreground"
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-secondary text-secondary-foreground"
                     }`}
                   >
                     {team.isQualified ? "Qualified" : "Eliminated"}

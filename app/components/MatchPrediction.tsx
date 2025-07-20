@@ -22,13 +22,35 @@ export default function MatchPrediction({
   onScoreChange,
 }: MatchPredictionProps) {
   const handleScoreChange = (team: "team1" | "team2", newScore: number) => {
-    if (newScore < 0 || newScore > 2) return; // Valid scores are 0, 1, or 2
+    if (newScore < 0 || newScore > 2) return;
+
+    let newTeam1Score = team1Score;
+    let newTeam2Score = team2Score;
 
     if (team === "team1") {
-      onScoreChange(newScore, team2Score);
+      newTeam1Score = newScore;
     } else {
-      onScoreChange(team1Score, newScore);
+      newTeam2Score = newScore;
     }
+
+    // Game not yet played
+    if (newTeam1Score === 0 && newTeam2Score === 0) {
+      onScoreChange(newTeam1Score, newTeam2Score);
+      return;
+    }
+
+    if (newTeam1Score === 1 && newTeam2Score === 1) {
+      onScoreChange(newTeam1Score, newTeam2Score);
+      return;
+    }
+
+    // Check if both teams have 2 wins (impossible in BO3)
+    if (newTeam1Score === 2 && newTeam2Score === 2) {
+      return; // Don't allow both teams to have 2 wins
+    }
+
+    // If we get here, the combination is valid
+    onScoreChange(newTeam1Score, newTeam2Score);
   };
 
   return (
@@ -59,7 +81,6 @@ export default function MatchPrediction({
         </div>
       </div>
 
-      {/* VS */}
       <span className="text-sm text-gray-400">VS</span>
 
       {/* Team 2 */}

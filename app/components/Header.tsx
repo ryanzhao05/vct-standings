@@ -43,7 +43,7 @@ export default function Header({
               className="flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-accent transition-colors cursor-pointer"
             >
               <RotateCcw className="w-4 h-4" />
-              Reset All
+              Reset Predictions
             </button>
             <button
               onClick={onShareLink}
