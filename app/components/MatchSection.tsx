@@ -1,26 +1,11 @@
 import MatchPrediction from "./MatchPrediction";
-
-interface Match {
-  id: string;
-  team1: {
-    id: string;
-    name: string;
-    abbreviation: string;
-  };
-  team2: {
-    id: string;
-    name: string;
-    abbreviation: string;
-  };
-  team1Score: number;
-  team2Score: number;
-}
+import { MatchWithTeams } from "../../lib/supabase";
 
 interface MatchSectionProps {
   title: string;
-  matches: Match[];
+  matches: MatchWithTeams[];
   onMatchScoreChange: (
-    matchId: string,
+    matchId: number,
     team1Score: number,
     team2Score: number
   ) => void;
@@ -42,10 +27,20 @@ export default function MatchSection({
         {matches.map((match) => (
           <MatchPrediction
             key={match.id}
-            team1={match.team1}
-            team2={match.team2}
-            team1Score={match.team1Score}
-            team2Score={match.team2Score}
+            team1={{
+              id: match.team1.id.toString(),
+              name: match.team1.name,
+              abbreviation: match.team1.name.substring(0, 3).toUpperCase(),
+              logo_url: match.team1.logo_url,
+            }}
+            team2={{
+              id: match.team2.id.toString(),
+              name: match.team2.name,
+              abbreviation: match.team2.name.substring(0, 3).toUpperCase(),
+              logo_url: match.team2.logo_url,
+            }}
+            team1Score={match.team1_score}
+            team2Score={match.team2_score}
             onScoreChange={(team1Score, team2Score) =>
               onMatchScoreChange(match.id, team1Score, team2Score)
             }

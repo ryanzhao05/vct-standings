@@ -26,14 +26,6 @@ export interface Match {
   created_at: string
 }
 
-export interface Prediction {
-  id: number
-  match_id: number
-  predicted_team1_score: number
-  predicted_team2_score: number
-  created_at: string
-}
-
 export interface MatchWithTeams extends Match {
   team1: Team
   team2: Team

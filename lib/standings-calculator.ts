@@ -1,21 +1,10 @@
-interface Team {
-  id: string;
-  name: string;
-  abbreviation: string;
-}
-
-interface Match {
-  id: string;
-  team1: Team;
-  team2: Team;
-  team1Score: number;
-  team2Score: number;
-}
+import { Team, MatchWithTeams } from './supabase';
 
 interface TeamStanding {
-  id: string;
+  id: number;
   name: string;
-  abbreviation: string;
+  abbreviation?: string;
+  logo_url?: string;
   position: number;
   wins: number;
   losses: number;
@@ -26,15 +15,16 @@ interface TeamStanding {
   isQualified: boolean;
 }
 
-export function calculateStandings(teams: Team[], matches: Match[]): TeamStanding[] {
+export function calculateStandings(teams: Team[], matches: MatchWithTeams[]): TeamStanding[] {
   // Initialize standings for all teams
-  const standings: { [key: string]: TeamStanding } = {};
+  const standings: { [key: number]: TeamStanding } = {};
   
   teams.forEach(team => {
     standings[team.id] = {
       id: team.id,
       name: team.name,
-      abbreviation: team.abbreviation,
+      abbreviation: team.name.substring(0, 3).toUpperCase(), // Generate abbreviation from name
+      logo_url: team.logo_url,
       position: 0,
       wins: 0,
       losses: 0,
@@ -48,45 +38,49 @@ export function calculateStandings(teams: Team[], matches: Match[]): TeamStandin
 
   // Process each match
   matches.forEach(match => {
-    const team1 = standings[match.team1.id];
-    const team2 = standings[match.team2.id];
+    const team1 = standings[match.team1_id];
+    const team2 = standings[match.team2_id];
     
     if (!team1 || !team2) return;
 
+    // Use predicted scores if available, otherwise use actual scores
+    const team1Score = match.team1_score;
+    const team2Score = match.team2_score;
+
     // Determine winner and loser
-    if (match.team1Score > match.team2Score) {
+    if (team1Score > team2Score) {
       // Team 1 wins
       team1.wins++;
       team2.losses++;
       
       // Map differentials
-      team1.mapWins += match.team1Score;
-      team1.mapLosses += match.team2Score;
-      team2.mapWins += match.team2Score;
-      team2.mapLosses += match.team1Score;
+      team1.mapWins += team1Score;
+      team1.mapLosses += team2Score;
+      team2.mapWins += team2Score;
+      team2.mapLosses += team1Score;
       
       // Round differentials (assuming 13 rounds per map for now)
-      const team1Rounds = match.team1Score * 13;
-      const team2Rounds = match.team2Score * 13;
+      const team1Rounds = team1Score * 13;
+      const team2Rounds = team2Score * 13;
       team1.roundWins += team1Rounds;
       team1.roundLosses += team2Rounds;
       team2.roundWins += team2Rounds;
       team2.roundLosses += team1Rounds;
       
-    } else if (match.team2Score > match.team1Score) {
+    } else if (team2Score > team1Score) {
       // Team 2 wins
       team2.wins++;
       team1.losses++;
       
       // Map differentials
-      team2.mapWins += match.team2Score;
-      team2.mapLosses += match.team1Score;
-      team1.mapWins += match.team1Score;
-      team1.mapLosses += match.team2Score;
+      team2.mapWins += team2Score;
+      team2.mapLosses += team1Score;
+      team1.mapWins += team1Score;
+      team1.mapLosses += team2Score;
       
       // Round differentials
-      const team1Rounds = match.team1Score * 13;
-      const team2Rounds = match.team2Score * 13;
+      const team1Rounds = team1Score * 13;
+      const team2Rounds = team2Score * 13;
       team2.roundWins += team2Rounds;
       team2.roundLosses += team1Rounds;
       team1.roundWins += team1Rounds;
@@ -94,13 +88,13 @@ export function calculateStandings(teams: Team[], matches: Match[]): TeamStandin
       
     } else {
       // Tie - both teams get 0.5 wins (or we could handle ties differently)
-      team1.mapWins += match.team1Score;
-      team1.mapLosses += match.team2Score;
-      team2.mapWins += match.team2Score;
-      team2.mapLosses += match.team1Score;
+      team1.mapWins += team1Score;
+      team1.mapLosses += team2Score;
+      team2.mapWins += team2Score;
+      team2.mapLosses += team1Score;
       
-      const team1Rounds = match.team1Score * 13;
-      const team2Rounds = match.team2Score * 13;
+      const team1Rounds = team1Score * 13;
+      const team2Rounds = team2Score * 13;
       team1.roundWins += team1Rounds;
       team1.roundLosses += team2Rounds;
       team2.roundWins += team2Rounds;

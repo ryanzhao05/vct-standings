@@ -1,13 +1,17 @@
+import Image from "next/image";
+
 interface MatchPredictionProps {
   team1: {
     id: string;
     name: string;
     abbreviation: string;
+    logo_url?: string;
   };
   team2: {
     id: string;
     name: string;
     abbreviation: string;
+    logo_url?: string;
   };
   team1Score: number;
   team2Score: number;
@@ -57,9 +61,28 @@ export default function MatchPrediction({
     <div className="flex items-center justify-between p-4 bg-accent rounded-lg">
       {/* Team 1 */}
       <div className="flex items-center gap-3">
-        <span className="text-sm font-medium text-white">
-          {team1.abbreviation}
-        </span>
+        <div className="flex items-center gap-2">
+          {team1.logo_url ? (
+            <div className="relative w-6 h-6">
+              <Image
+                src={team1.logo_url}
+                alt={`${team1.name} logo`}
+                fill
+                className="object-contain"
+                onError={() => {
+                  // Fallback is handled by the span below
+                }}
+              />
+            </div>
+          ) : null}
+          <span
+            className={`text-sm font-medium text-white ${
+              team1.logo_url ? "hidden" : "inline"
+            }`}
+          >
+            {team1.abbreviation}
+          </span>
+        </div>
         <div className="flex items-center gap-2">
           <button
             onClick={() => handleScoreChange("team1", team1Score - 1)}
@@ -81,7 +104,9 @@ export default function MatchPrediction({
         </div>
       </div>
 
-      <span className="text-sm text-gray-400">VS</span>
+      <div className="flex justify-center">
+        <span className="text-sm text-gray-400">VS</span>
+      </div>
 
       {/* Team 2 */}
       <div className="flex items-center gap-3">
@@ -104,9 +129,28 @@ export default function MatchPrediction({
             +
           </button>
         </div>
-        <span className="text-sm font-medium text-white">
-          {team2.abbreviation}
-        </span>
+        <div className="flex items-center gap-2">
+          {team2.logo_url ? (
+            <div className="relative w-6 h-6">
+              <Image
+                src={team2.logo_url}
+                alt={`${team2.name} logo`}
+                fill
+                className="object-contain"
+                onError={() => {
+                  // Fallback is handled by the span below
+                }}
+              />
+            </div>
+          ) : null}
+          <span
+            className={`text-sm font-medium text-white ${
+              team2.logo_url ? "hidden" : "inline"
+            }`}
+          >
+            {team2.abbreviation}
+          </span>
+        </div>
       </div>
     </div>
   );

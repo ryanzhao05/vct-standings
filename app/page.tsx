@@ -1,16 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "./components/Header";
 import RegionTabs from "./components/RegionTabs";
 import StandingsTable from "./components/StandingsTable";
 import MatchSection from "./components/MatchSection";
 import { calculateStandings } from "../lib/standings-calculator";
+import { getTeamsByRegion, getMatchesByRegion } from "../lib/supabase-data";
+import {
+  getPredictionsForRegion,
+  savePrediction,
+  deleteAllPredictions,
+} from "../lib/local-storage";
+import { Team, MatchWithTeams } from "../lib/supabase";
 
 type Region = "americas" | "emea" | "pacific" | "china";
 
 export default function Home() {
   const [selectedRegion, setSelectedRegion] = useState<Region>("americas");
+  const [teams, setTeams] = useState<Team[]>([]);
+  const [matches, setMatches] = useState<MatchWithTeams[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [predictions, setPredictions] = useState<{
+    [key: number]: { team1Score: number; team2Score: number };
+  }>({});
 
   const regions = [
     { id: "americas", name: "Americas" },
@@ -19,73 +32,68 @@ export default function Home() {
     { id: "china", name: "China" },
   ] as const;
 
-  const groupAlphaTeams = [
-    { id: "lev", name: "Leviatán", abbreviation: "LEV" },
-    { id: "eg", name: "Evil Geniuses", abbreviation: "EG" },
-    { id: "kru", name: "KRÜ Esports", abbreviation: "KRU" },
-    { id: "loud", name: "LOUD", abbreviation: "LOUD" },
-    { id: "mibr", name: "MIBR", abbreviation: "MIBR" },
-    { id: "sen", name: "Sentinels", abbreviation: "SEN" },
-  ];
+  // Fetch data when region changes
+  useEffect(() => {
+    async function fetchData() {
+      setLoading(true);
+      try {
+        const [teamsData, matchesData] = await Promise.all([
+          getTeamsByRegion(selectedRegion),
+          getMatchesByRegion(selectedRegion),
+        ]);
+        setTeams(teamsData);
+        setMatches(matchesData);
 
-  const groupOmegaTeams = [
-    { id: "nrg", name: "NRG Esports", abbreviation: "NRG" },
-    { id: "c9", name: "Cloud9", abbreviation: "C9" },
-    { id: "100t", name: "100 Thieves", abbreviation: "100T" },
-    { id: "furia", name: "FURIA", abbreviation: "FUR" },
-    { id: "g2", name: "G2 Esports", abbreviation: "G2" },
-    { id: "liquid", name: "Team Liquid", abbreviation: "TL" },
-  ];
+        // Load user's predictions for this region
+        const userPredictions = getPredictionsForRegion(selectedRegion);
+        const predictionsMap: {
+          [key: number]: { team1Score: number; team2Score: number };
+        } = {};
+        userPredictions.forEach((pred) => {
+          predictionsMap[pred.matchId] = {
+            team1Score: pred.team1Score,
+            team2Score: pred.team2Score,
+          };
+        });
+        setPredictions(predictionsMap);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
 
-  // Sample match data for Group Alpha
-  const [groupAlphaMatches, setGroupAlphaMatches] = useState([
-    {
-      id: "sen-vs-lev",
-      team1: { id: "sen", name: "Sentinels", abbreviation: "SEN" },
-      team2: { id: "lev", name: "Leviatán", abbreviation: "LEV" },
-      team1Score: 0,
-      team2Score: 2,
-    },
-    {
-      id: "eg-vs-kru",
-      team1: { id: "eg", name: "Evil Geniuses", abbreviation: "EG" },
-      team2: { id: "kru", name: "KRÜ Esports", abbreviation: "KRU" },
-      team1Score: 2,
-      team2Score: 1,
-    },
-    {
-      id: "loud-vs-mibr",
-      team1: { id: "loud", name: "LOUD", abbreviation: "LOUD" },
-      team2: { id: "mibr", name: "MIBR", abbreviation: "MIBR" },
-      team1Score: 0,
-      team2Score: 0,
-    },
-  ]);
+    fetchData();
+  }, [selectedRegion]);
 
-  // Sample match data for Group Omega
-  const [groupOmegaMatches, setGroupOmegaMatches] = useState([
-    {
-      id: "nrg-vs-100t",
-      team1: { id: "nrg", name: "NRG Esports", abbreviation: "NRG" },
-      team2: { id: "100t", name: "100 Thieves", abbreviation: "100T" },
-      team1Score: 2,
-      team2Score: 0,
-    },
-    {
-      id: "c9-vs-fur",
-      team1: { id: "c9", name: "Cloud9", abbreviation: "C9" },
-      team2: { id: "furia", name: "FURIA", abbreviation: "FUR" },
-      team1Score: 0,
-      team2Score: 0,
-    },
-    {
-      id: "g2-vs-tl",
-      team1: { id: "g2", name: "G2 Esports", abbreviation: "G2" },
-      team2: { id: "liquid", name: "Team Liquid", abbreviation: "TL" },
-      team1Score: 0,
-      team2Score: 0,
-    },
-  ]);
+  // Group teams by their group
+  const groupAlphaTeams = teams.filter((team) => team.group_name === "alpha");
+  const groupOmegaTeams = teams.filter((team) => team.group_name === "omega");
+
+  // Group matches by their group and merge with user predictions
+  const groupAlphaMatches = matches
+    .filter((match) =>
+      groupAlphaTeams.some(
+        (team) => team.id === match.team1_id || team.id === match.team2_id
+      )
+    )
+    .map((match) => ({
+      ...match,
+      team1_score: predictions[match.id]?.team1Score ?? match.team1_score,
+      team2_score: predictions[match.id]?.team2Score ?? match.team2_score,
+    }));
+
+  const groupOmegaMatches = matches
+    .filter((match) =>
+      groupOmegaTeams.some(
+        (team) => team.id === match.team1_id || team.id === match.team2_id
+      )
+    )
+    .map((match) => ({
+      ...match,
+      team1_score: predictions[match.id]?.team1Score ?? match.team1_score,
+      team2_score: predictions[match.id]?.team2Score ?? match.team2_score,
+    }));
 
   // Calculate standings based on current match predictions
   const groupAlphaStandings = calculateStandings(
@@ -98,13 +106,9 @@ export default function Home() {
   );
 
   const handleResetAll = () => {
-    // Reset all match predictions
-    setGroupAlphaMatches((prev) =>
-      prev.map((match) => ({ ...match, team1Score: 0, team2Score: 0 }))
-    );
-    setGroupOmegaMatches((prev) =>
-      prev.map((match) => ({ ...match, team1Score: 0, team2Score: 0 }))
-    );
+    // Delete all predictions for current region
+    deleteAllPredictions(selectedRegion);
+    setPredictions({});
   };
 
   const handleShareLink = () => {
@@ -116,41 +120,41 @@ export default function Home() {
     setSelectedRegion(region);
   };
 
-  const handleGroupAlphaMatchChange = (
-    matchId: string,
+  const handleMatchScoreChange = (
+    matchId: number,
     team1Score: number,
     team2Score: number
   ) => {
-    setGroupAlphaMatches((prev) =>
-      prev.map((match) =>
-        match.id === matchId ? { ...match, team1Score, team2Score } : match
-      )
-    );
+    // Save prediction to local storage
+    savePrediction(matchId, team1Score, team2Score, selectedRegion);
+
+    // Update local state
+    setPredictions((prev) => ({
+      ...prev,
+      [matchId]: { team1Score, team2Score },
+    }));
   };
 
-  const handleGroupOmegaMatchChange = (
-    matchId: string,
-    team1Score: number,
-    team2Score: number
-  ) => {
-    setGroupOmegaMatches((prev) =>
-      prev.map((match) =>
-        match.id === matchId ? { ...match, team1Score, team2Score } : match
-      )
-    );
+  const handleGroupReset = (groupMatches: MatchWithTeams[]) => {
+    // Delete predictions for matches in this group
+    groupMatches.forEach((match) => {
+      deleteAllPredictions(selectedRegion);
+    });
+    setPredictions({});
   };
 
-  const handleGroupAlphaReset = () => {
-    setGroupAlphaMatches((prev) =>
-      prev.map((match) => ({ ...match, team1Score: 0, team2Score: 0 }))
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500 mx-auto mb-4"></div>
+          <p className="text-lg">
+            Loading {regions.find((r) => r.id === selectedRegion)?.name} data...
+          </p>
+        </div>
+      </div>
     );
-  };
-
-  const handleGroupOmegaReset = () => {
-    setGroupOmegaMatches((prev) =>
-      prev.map((match) => ({ ...match, team1Score: 0, team2Score: 0 }))
-    );
-  };
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -185,15 +189,15 @@ export default function Home() {
           <MatchSection
             title="Group Alpha Matches"
             matches={groupAlphaMatches}
-            onMatchScoreChange={handleGroupAlphaMatchChange}
-            onReset={handleGroupAlphaReset}
+            onMatchScoreChange={handleMatchScoreChange}
+            onReset={() => handleGroupReset(groupAlphaMatches)}
           />
 
           <MatchSection
             title="Group Omega Matches"
             matches={groupOmegaMatches}
-            onMatchScoreChange={handleGroupOmegaMatchChange}
-            onReset={handleGroupOmegaReset}
+            onMatchScoreChange={handleMatchScoreChange}
+            onReset={() => handleGroupReset(groupOmegaMatches)}
           />
         </div>
       </main>

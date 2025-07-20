@@ -1,7 +1,10 @@
+import Image from "next/image";
+
 interface TeamStanding {
-  id: string;
+  id: number;
   name: string;
-  abbreviation: string;
+  abbreviation?: string;
+  logo_url?: string;
   position: number;
   wins: number;
   losses: number;
@@ -88,7 +91,26 @@ export default function StandingsTable({
                   {team.position}
                 </td>
                 <td className="py-3 px-2 text-sm text-white">
-                  {team.abbreviation} {team.name}
+                  <div className="flex items-center gap-3">
+                    {team.logo_url ? (
+                      <div className="relative w-6 h-6">
+                        <Image
+                          src={team.logo_url}
+                          alt={`${team.name} logo`}
+                          fill
+                          className="object-contain"
+                          onError={() => {
+                            // Fallback is handled by the span below
+                          }}
+                        />
+                      </div>
+                    ) : null}
+                    <span className={team.logo_url ? "hidden" : "inline"}>
+                      {team.abbreviation ||
+                        team.name.substring(0, 3).toUpperCase()}
+                    </span>
+                    <span>{team.name}</span>
+                  </div>
                 </td>
                 <td className="py-3 px-2 text-sm text-white">
                   {team.wins}-{team.losses}

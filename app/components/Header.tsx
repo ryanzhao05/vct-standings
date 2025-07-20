@@ -50,7 +50,7 @@ export default function Header({
               className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors cursor-pointer"
             >
               <Share2 className="w-4 h-4" />
-              Share Link
+              Share
             </button>
           </div>
         </div>
