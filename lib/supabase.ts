@@ -11,6 +11,8 @@ export interface Team {
   region: 'americas' | 'emea' | 'pacific' | 'china'
   group_name: 'alpha' | 'omega'
   logo_url?: string
+  rounds_won?: number
+  rounds_lost?: number
   created_at: string
 }
 

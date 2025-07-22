@@ -26,13 +26,12 @@ export default function StandingsTable({
   subtitle,
   standings,
 }: StandingsTableProps) {
-  const getMapDifferential = (team: TeamStanding) => {
-    const diff = team.mapWins - team.mapLosses;
-    return diff > 0 ? `+${diff}` : diff < 0 ? `${diff}` : "0";
-  };
-
   const getMapRecord = (team: TeamStanding) => {
     return `${team.mapWins}-${team.mapLosses}`;
+  };
+
+  const getRoundsRecord = (team: TeamStanding) => {
+    return `${team.roundWins}/${team.roundLosses}`;
   };
 
   const getRoundDifferential = (team: TeamStanding) => {
@@ -40,11 +39,8 @@ export default function StandingsTable({
     return diff > 0 ? `+${diff}` : diff < 0 ? `${diff}` : "0";
   };
 
-  const getDifferentialColor = (team: TeamStanding, type: "map" | "round") => {
-    const diff =
-      type === "map"
-        ? team.mapWins - team.mapLosses
-        : team.roundWins - team.roundLosses;
+  const getDifferentialColor = (team: TeamStanding) => {
+    const diff = team.roundWins - team.roundLosses;
 
     if (diff > 0) return "text-green-400";
     if (diff < 0) return "text-red-400";
@@ -74,7 +70,7 @@ export default function StandingsTable({
                 Map Record
               </th>
               <th className="text-left py-3 px-2 text-sm font-medium text-gray-400">
-                Map Diff
+                Rounds
               </th>
               <th className="text-left py-3 px-2 text-sm font-medium text-gray-400">
                 Round Diff
@@ -118,19 +114,11 @@ export default function StandingsTable({
                 <td className="py-3 px-2 text-sm text-white">
                   {getMapRecord(team)}
                 </td>
-                <td
-                  className={`py-3 px-2 text-sm ${getDifferentialColor(
-                    team,
-                    "map"
-                  )}`}
-                >
-                  {getMapDifferential(team)}
+                <td className="py-3 px-2 text-sm text-white">
+                  {getRoundsRecord(team)}
                 </td>
                 <td
-                  className={`py-3 px-2 text-sm ${getDifferentialColor(
-                    team,
-                    "round"
-                  )}`}
+                  className={`py-3 px-2 text-sm ${getDifferentialColor(team)}`}
                 >
                   {getRoundDifferential(team)}
                 </td>

@@ -8,6 +8,12 @@ const nextConfig: NextConfig = {
         hostname: 'owcdn.net',
         port: '',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cdn.pandascore.co',
+        port: '',
+        pathname: '/**',
       }
     ],
   },
