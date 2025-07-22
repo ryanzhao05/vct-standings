@@ -67,3 +67,7 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--accent);
 }
+
+.selected-region-border {
+  border-bottom-color: var(--primary) !important;
+}
