@@ -15,6 +15,7 @@ interface MatchPredictionProps {
   };
   team1Score: number;
   team2Score: number;
+  isCompleted?: boolean;
   onScoreChange: (team1Score: number, team2Score: number) => void;
 }
 
@@ -23,10 +24,11 @@ export default function MatchPrediction({
   team2,
   team1Score,
   team2Score,
+  isCompleted = false,
   onScoreChange,
 }: MatchPredictionProps) {
   const handleScoreChange = (team: "team1" | "team2", newScore: number) => {
-    if (newScore < 0 || newScore > 2) return;
+    if (isCompleted || newScore < 0 || newScore > 2) return;
 
     let newTeam1Score = team1Score;
     let newTeam2Score = team2Score;
@@ -58,7 +60,16 @@ export default function MatchPrediction({
   };
 
   return (
-    <div className="flex items-center justify-between p-4 bg-accent rounded-lg">
+    <div
+      className={`flex items-center justify-between p-4 rounded-lg ${
+        isCompleted ? "bg-accent/50 border border-green-500/20" : "bg-accent"
+      }`}
+    >
+      {isCompleted && (
+        <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+          COMPLETED
+        </div>
+      )}
       {/* Team 1 */}
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-2">
@@ -86,7 +97,7 @@ export default function MatchPrediction({
         <div className="flex items-center gap-2">
           <button
             onClick={() => handleScoreChange("team1", team1Score - 1)}
-            disabled={team1Score <= 0}
+            disabled={team1Score <= 0 || isCompleted}
             className="w-8 h-8 bg-background text-foreground rounded flex items-center justify-center hover:bg-accent-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
             -
@@ -96,7 +107,7 @@ export default function MatchPrediction({
           </span>
           <button
             onClick={() => handleScoreChange("team1", team1Score + 1)}
-            disabled={team1Score >= 2}
+            disabled={team1Score >= 2 || isCompleted}
             className="w-8 h-8 bg-background text-foreground rounded flex items-center justify-center hover:bg-accent-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
             +
@@ -113,7 +124,7 @@ export default function MatchPrediction({
         <div className="flex items-center gap-2">
           <button
             onClick={() => handleScoreChange("team2", team2Score - 1)}
-            disabled={team2Score <= 0}
+            disabled={team2Score <= 0 || isCompleted}
             className="w-8 h-8 bg-background text-foreground rounded flex items-center justify-center hover:bg-accent-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
             -
@@ -123,7 +134,7 @@ export default function MatchPrediction({
           </span>
           <button
             onClick={() => handleScoreChange("team2", team2Score + 1)}
-            disabled={team2Score >= 2}
+            disabled={team2Score >= 2 || isCompleted}
             className="w-8 h-8 bg-background text-foreground rounded flex items-center justify-center hover:bg-accent-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
             +

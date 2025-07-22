@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Header from "./components/Header";
 import RegionTabs from "./components/RegionTabs";
 import StandingsTable from "./components/StandingsTable";
-import MatchSection from "./components/MatchSection";
+import GroupMatches from "./components/GroupMatches";
 import { calculateStandings } from "../lib/standings-calculator";
 import { getTeamsByRegion, getMatchesByRegion } from "../lib/supabase-data";
 import {
@@ -186,19 +186,23 @@ export default function Home() {
             standings={groupOmegaStandings}
           />
 
-          <MatchSection
-            title="Group Alpha Matches"
-            matches={groupAlphaMatches}
-            onMatchScoreChange={handleMatchScoreChange}
-            onReset={() => handleGroupReset(groupAlphaMatches)}
-          />
+          <div className="h-[600px]">
+            <GroupMatches
+              title="Group Alpha Matches"
+              matches={groupAlphaMatches}
+              onMatchScoreChange={handleMatchScoreChange}
+              onReset={() => handleGroupReset(groupAlphaMatches)}
+            />
+          </div>
 
-          <MatchSection
-            title="Group Omega Matches"
-            matches={groupOmegaMatches}
-            onMatchScoreChange={handleMatchScoreChange}
-            onReset={() => handleGroupReset(groupOmegaMatches)}
-          />
+          <div className="h-[600px]">
+            <GroupMatches
+              title="Group Omega Matches"
+              matches={groupOmegaMatches}
+              onMatchScoreChange={handleMatchScoreChange}
+              onReset={() => handleGroupReset(groupOmegaMatches)}
+            />
+          </div>
         </div>
       </main>
     </div>
