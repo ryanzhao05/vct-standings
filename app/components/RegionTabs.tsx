@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 type Region = "americas" | "emea" | "pacific" | "china";
 
 interface RegionTabsProps {
@@ -6,10 +8,10 @@ interface RegionTabsProps {
 }
 
 const regions = [
-  { id: "americas", name: "Americas" },
-  { id: "emea", name: "EMEA" },
-  { id: "pacific", name: "Pacific" },
-  { id: "china", name: "China" },
+  { id: "americas", name: "Americas", icon: "/vct_icons/americas.png" },
+  { id: "emea", name: "EMEA", icon: "/vct_icons/emea.png" },
+  { id: "pacific", name: "Pacific", icon: "/vct_icons/pacific.png" },
+  { id: "china", name: "China", icon: "/vct_icons/china.png" },
 ] as const;
 
 export default function RegionTabs({
@@ -24,13 +26,20 @@ export default function RegionTabs({
             <button
               key={region.id}
               onClick={() => onRegionChange(region.id)}
-              className={`px-6 py-3 text-sm font-medium rounded-t-lg transition-colors cursor-pointer ${
+              className={`px-6 py-3 text-sm font-medium rounded-t-lg transition-colors cursor-pointer flex items-center space-x-2 ${
                 selectedRegion === region.id
                   ? "bg-background text-foreground border-b-2 border-primary"
                   : "text-gray-400 hover:text-gray-300 hover:bg-accent"
               }`}
             >
-              {region.name}
+              <Image
+                src={region.icon}
+                alt={`${region.name} region icon`}
+                width={20}
+                height={20}
+                className="w-5 h-5"
+              />
+              <span>{region.name}</span>
             </button>
           ))}
         </div>
