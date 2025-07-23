@@ -15,10 +15,8 @@ export const metadata: Metadata = {
   keywords:
     "VCT, Valorant, esports, standings, predictions, Valorant Champions Tour",
   icons: {
-    icon: [
-      { url: "/vct_logo.png", sizes: "32x32", type: "image/png" },
-      { url: "/vct_logo.png", sizes: "16x16", type: "image/png" },
-    ],
+    icon: "/vct_logo.png",
+    shortcut: "/vct_logo.png",
     apple: "/vct_logo.png",
   },
 };

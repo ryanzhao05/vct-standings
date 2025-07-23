@@ -71,103 +71,119 @@ export default function MatchPrediction({
     >
       {/* Team 1 */}
       <div
-        className={`flex items-center gap-2 lg:gap-3 ${
+        className={`flex items-center justify-center gap-2 lg:gap-3 w-full sm:w-auto ${
           team1Wins
-            ? "border-b-2 lg:border-b-4 !border-emerald-600 pb-1 lg:pb-2"
+            ? "sm:border-b-2 lg:border-b-4 !border-emerald-600 sm:pb-1 lg:pb-2"
             : ""
         }`}
       >
-        <div className="flex items-center gap-1 lg:gap-2">
-          {team1.logo_url ? (
-            <div className="relative w-6 h-6 lg:w-8 lg:h-8">
-              <Image
-                src={team1.logo_url}
-                alt={`${team1.name} logo`}
-                fill
-                className="object-contain"
-                onError={() => {}}
-              />
-            </div>
-          ) : null}
-          <span
-            className={`text-xs lg:text-sm font-medium text-white ${
-              team1.logo_url ? "hidden" : "inline"
-            }`}
-          >
-            {team1.abbreviation}
-          </span>
-        </div>
-        <div className="flex items-center gap-1 lg:gap-2">
-          <button
-            onClick={() => handleScoreChange("team1", team1Score - 1)}
-            disabled={team1Score <= 0 || isCompleted}
-            className="w-6 h-6 lg:w-8 lg:h-8 bg-background text-foreground rounded flex items-center justify-center hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer text-xs lg:text-sm"
-          >
-            -
-          </button>
-          <span className="w-8 lg:w-12 text-center text-white font-medium text-xs lg:text-sm">
-            {team1Score}
-          </span>
-          <button
-            onClick={() => handleScoreChange("team1", team1Score + 1)}
-            disabled={team1Score >= 2 || isCompleted}
-            className="w-6 h-6 lg:w-8 lg:h-8 bg-background text-foreground rounded flex items-center justify-center hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer text-xs lg:text-sm"
-          >
-            +
-          </button>
+        <div
+          className={`flex items-center gap-2 lg:gap-3 ${
+            team1Wins
+              ? "border-b-2 !border-emerald-600 pb-1 sm:border-b-0 sm:pb-0"
+              : ""
+          }`}
+        >
+          <div className="flex items-center gap-1 lg:gap-2">
+            {team1.logo_url ? (
+              <div className="relative w-6 h-6 lg:w-8 lg:h-8">
+                <Image
+                  src={team1.logo_url}
+                  alt={`${team1.name} logo`}
+                  fill
+                  className="object-contain"
+                  onError={() => {}}
+                />
+              </div>
+            ) : null}
+            <span
+              className={`text-xs lg:text-sm font-medium text-white ${
+                team1.logo_url ? "hidden" : "inline"
+              }`}
+            >
+              {team1.abbreviation}
+            </span>
+          </div>
+          <div className="flex items-center justify-center gap-1 lg:gap-2">
+            <button
+              onClick={() => handleScoreChange("team1", team1Score - 1)}
+              disabled={team1Score <= 0 || isCompleted}
+              className="w-6 h-6 lg:w-8 lg:h-8 bg-background text-foreground rounded flex items-center justify-center hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer text-xs lg:text-sm"
+            >
+              -
+            </button>
+            <span className="w-8 lg:w-12 text-center text-white font-bold text-xs lg:text-sm">
+              {team1Score}
+            </span>
+            <button
+              onClick={() => handleScoreChange("team1", team1Score + 1)}
+              disabled={team1Score >= 2 || isCompleted}
+              className="w-6 h-6 lg:w-8 lg:h-8 bg-background text-foreground rounded flex items-center justify-center hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer text-xs lg:text-sm"
+            >
+              +
+            </button>
+          </div>
         </div>
       </div>
-      <div className="flex justify-center">
+      <div className="flex justify-center items-center">
         <span className="text-xs lg:text-sm text-gray-400">VS</span>
       </div>
       {/* Team 2 */}
       <div
-        className={`flex items-center gap-2 lg:gap-3 ${
+        className={`flex items-center justify-center gap-2 lg:gap-3 w-full sm:w-auto ${
           team2Wins
-            ? "border-b-2 lg:border-b-4 !border-emerald-600 pb-1 lg:pb-2"
+            ? "sm:border-b-2 lg:border-b-4 !border-emerald-600 sm:pb-1 lg:pb-2"
             : ""
         }`}
       >
-        <div className="flex items-center gap-1 lg:gap-2">
-          <button
-            onClick={() => handleScoreChange("team2", team2Score - 1)}
-            disabled={team2Score <= 0 || isCompleted}
-            className="w-6 h-6 lg:w-8 lg:h-8 bg-background text-foreground rounded flex items-center justify-center hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer text-xs lg:text-sm"
-          >
-            -
-          </button>
-          <span className="w-8 lg:w-12 text-center text-white font-medium text-xs lg:text-sm">
-            {team2Score}
-          </span>
-          <button
-            onClick={() => handleScoreChange("team2", team2Score + 1)}
-            disabled={team2Score >= 2 || isCompleted}
-            className="w-6 h-6 lg:w-8 lg:h-8 bg-background text-foreground rounded flex items-center justify-center hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer text-xs lg:text-sm"
-          >
-            +
-          </button>
-        </div>
-        <div className="flex items-center gap-1 lg:gap-2">
-          {team2.logo_url ? (
-            <div className="relative w-6 h-6 lg:w-8 lg:h-8">
-              <Image
-                src={team2.logo_url}
-                alt={`${team2.name} logo`}
-                fill
-                className="object-contain"
-                onError={() => {
-                  // Fallback is handled by the span below
-                }}
-              />
-            </div>
-          ) : null}
-          <span
-            className={`text-xs lg:text-sm font-medium text-white ${
-              team2.logo_url ? "hidden" : "inline"
-            }`}
-          >
-            {team2.abbreviation}
-          </span>
+        <div
+          className={`flex items-center gap-2 lg:gap-3 ${
+            team2Wins
+              ? "border-b-2 !border-emerald-600 pb-1 sm:border-b-0 sm:pb-0"
+              : ""
+          }`}
+        >
+          <div className="flex items-center gap-1 lg:gap-2">
+            {team2.logo_url ? (
+              <div className="relative w-6 h-6 lg:w-8 lg:h-8">
+                <Image
+                  src={team2.logo_url}
+                  alt={`${team2.name} logo`}
+                  fill
+                  className="object-contain"
+                  onError={() => {
+                    // Fallback is handled by the span below
+                  }}
+                />
+              </div>
+            ) : null}
+            <span
+              className={`text-xs lg:text-sm font-medium text-white ${
+                team2.logo_url ? "hidden" : "inline"
+              }`}
+            >
+              {team2.abbreviation}
+            </span>
+          </div>
+          <div className="flex items-center justify-center gap-1 lg:gap-2">
+            <button
+              onClick={() => handleScoreChange("team2", team2Score - 1)}
+              disabled={team2Score <= 0 || isCompleted}
+              className="w-6 h-6 lg:w-8 lg:h-8 bg-background text-foreground rounded flex items-center justify-center hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer text-xs lg:text-sm"
+            >
+              -
+            </button>
+            <span className="w-8 lg:w-12 text-center text-white font-bold text-xs lg:text-sm">
+              {team2Score}
+            </span>
+            <button
+              onClick={() => handleScoreChange("team2", team2Score + 1)}
+              disabled={team2Score >= 2 || isCompleted}
+              className="w-6 h-6 lg:w-8 lg:h-8 bg-background text-foreground rounded flex items-center justify-center hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer text-xs lg:text-sm"
+            >
+              +
+            </button>
+          </div>
         </div>
       </div>
     </div>
