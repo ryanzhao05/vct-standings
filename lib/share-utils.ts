@@ -1,16 +1,15 @@
 import { LocalPrediction } from './local-storage';
 
-// Encode predictions into a URL-safe string
+// Encode predictions into a URL-safe string 
 export function encodePredictions(predictions: LocalPrediction[], region: string): string {
-  const shareData = {
-    region,
-    predictions,
-    timestamp: Date.now()
+  const compactData = {
+    r: region, 
+    p: predictions.map(p => [p.matchId, p.team1Score, p.team2Score]) 
   };
   
   try {
-    const jsonString = JSON.stringify(shareData);
-    return btoa(jsonString); 
+    const jsonString = JSON.stringify(compactData);
+    return btoa(jsonString).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
   } catch (error) {
     console.error('Error encoding predictions:', error);
     return '';
@@ -20,12 +19,25 @@ export function encodePredictions(predictions: LocalPrediction[], region: string
 // Decode predictions from a URL-safe string
 export function decodePredictions(encodedData: string): { region: string; predictions: LocalPrediction[] } | null {
   try {
-    const jsonString = atob(encodedData); 
-    const shareData = JSON.parse(jsonString);
+    // Restore base64 padding and convert back to standard base64
+    let paddedData = encodedData.replace(/-/g, '+').replace(/_/g, '/');
+    while (paddedData.length % 4) {
+      paddedData += '=';
+    }
+    
+    const jsonString = atob(paddedData);
+    const compactData = JSON.parse(jsonString);
+    
+    // Convert back to LocalPrediction format
+    const predictions: LocalPrediction[] = compactData.p.map((p: [number, number, number]) => ({
+      matchId: p[0],
+      team1Score: p[1],
+      team2Score: p[2]
+    }));
     
     return {
-      region: shareData.region,
-      predictions: shareData.predictions || []
+      region: compactData.r,
+      predictions: predictions || []
     };
   } catch (error) {
     console.error('Error decoding predictions:', error);

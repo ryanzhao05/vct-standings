@@ -32,7 +32,8 @@ export default function Header({
               </h1>
             </div>
             <p className="text-gray-300 mt-1 lg:mt-2 text-sm lg:text-base">
-              Predict match outcomes and see playoff scenarios
+              Predict match outcomes and see how your favorite teams can qualify
+              for playoffs!
             </p>
             <p className="text-gray-200 font-semibold mt-1 text-sm lg:text-base">
               2025 {selectedRegion} Stage 2

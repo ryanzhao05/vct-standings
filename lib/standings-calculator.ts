@@ -59,6 +59,17 @@ export function calculateStandings(teams: Team[], matches: MatchWithTeams[]): Te
       team2.mapWins += team2Score;
       team2.mapLosses += team1Score;
       
+      // Round differentials
+      if (!match.is_completed) {
+        // Default to 13-9
+        const mapsWon = team1Score;
+        const mapsLost = team2Score;
+        team1.roundWins += mapsWon * 13;
+        team1.roundLosses += mapsWon * 9; 
+        team2.roundWins += mapsLost * 13;
+        team2.roundLosses += mapsLost * 9; 
+      }
+      
     } else if (team2Score > team1Score) {
       // Team 2 wins
       team2.wins++;
@@ -70,12 +81,32 @@ export function calculateStandings(teams: Team[], matches: MatchWithTeams[]): Te
       team1.mapWins += team1Score;
       team1.mapLosses += team2Score;
       
+      // Round differentials 
+      if (!match.is_completed) {
+        // Default to 13-9
+        const mapsWon = team2Score;
+        const mapsLost = team1Score;
+        team2.roundWins += mapsWon * 13;
+        team2.roundLosses += mapsWon * 9;
+        team1.roundWins += mapsLost * 13;
+        team1.roundLosses += mapsLost * 9; 
+      }
+      
     } else {
-      // Tie - both teams get 0.5 wins (or we could handle ties differently)
       team1.mapWins += team1Score;
       team1.mapLosses += team2Score;
       team2.mapWins += team2Score;
       team2.mapLosses += team1Score;
+      
+      // Round differentials 
+      if (!match.is_completed) {
+        // Default to 13-9
+        const mapsPlayed = team1Score; 
+        team1.roundWins += mapsPlayed * 13;
+        team1.roundLosses += mapsPlayed * 9;
+        team2.roundWins += mapsPlayed * 13;
+        team2.roundLosses += mapsPlayed * 9;
+      }
     }
   });
 
