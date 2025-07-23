@@ -75,21 +75,25 @@ export default function StandingsTable({
               <th className="text-left py-3 px-2 text-sm font-medium text-gray-400">
                 Round Diff
               </th>
-              <th className="text-left py-3 px-2 text-sm font-medium text-gray-400">
-                Status
-              </th>
             </tr>
           </thead>
           <tbody>
             {standings.map((team) => (
-              <tr key={team.id} className="border-b border-border/50">
-                <td className="py-3 px-2 text-sm text-white">
+              <tr
+                key={team.id}
+                className={`border-b border-border/50 relative ${
+                  team.isQualified
+                    ? "border-l-8 !border-l-emerald-600"
+                    : "border-l-8 !border-l-rose-500"
+                }`}
+              >
+                <td className="py-3 px-4 text-sm text-white">
                   {team.position}
                 </td>
                 <td className="py-3 px-2 text-sm text-white">
                   <div className="flex items-center gap-3">
                     {team.logo_url ? (
-                      <div className="relative w-6 h-6">
+                      <div className="relative w-8 h-8">
                         <Image
                           src={team.logo_url}
                           alt={`${team.name} logo`}
@@ -105,7 +109,7 @@ export default function StandingsTable({
                       {team.abbreviation ||
                         team.name.substring(0, 3).toUpperCase()}
                     </span>
-                    <span>{team.name}</span>
+                    <span className="ml-2 font-semibold">{team.name}</span>
                   </div>
                 </td>
                 <td className="py-3 px-2 text-sm text-white">
@@ -121,17 +125,6 @@ export default function StandingsTable({
                   className={`py-3 px-2 text-sm ${getDifferentialColor(team)}`}
                 >
                   {getRoundDifferential(team)}
-                </td>
-                <td className="py-3 px-2">
-                  <span
-                    className={`px-2 py-1 text-xs rounded-full ${
-                      team.isQualified
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-secondary text-secondary-foreground"
-                    }`}
-                  >
-                    {team.isQualified ? "Qualified" : "Eliminated"}
-                  </span>
                 </td>
               </tr>
             ))}

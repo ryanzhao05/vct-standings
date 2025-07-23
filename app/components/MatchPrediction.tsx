@@ -27,6 +27,10 @@ export default function MatchPrediction({
   isCompleted = false,
   onScoreChange,
 }: MatchPredictionProps) {
+  // Determine winner for green underline
+  const team1Wins = team1Score > team2Score;
+  const team2Wins = team2Score > team1Score;
+
   const handleScoreChange = (team: "team1" | "team2", newScore: number) => {
     if (isCompleted || newScore < 0 || newScore > 2) return;
 
@@ -66,23 +70,25 @@ export default function MatchPrediction({
       }`}
     >
       {isCompleted && (
-        <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+        <div className="absolute -top-2 -right-2 bg-emerald-500 text-white text-xs px-2 py-1 rounded-full">
           COMPLETED
         </div>
       )}
       {/* Team 1 */}
-      <div className="flex items-center gap-3">
+      <div
+        className={`flex items-center gap-3 ${
+          team1Wins ? "border-b-4 !border-green-500 pb-2" : ""
+        }`}
+      >
         <div className="flex items-center gap-2">
           {team1.logo_url ? (
-            <div className="relative w-6 h-6">
+            <div className="relative w-8 h-8">
               <Image
                 src={team1.logo_url}
                 alt={`${team1.name} logo`}
                 fill
                 className="object-contain"
-                onError={() => {
-                  // Fallback is handled by the span below
-                }}
+                onError={() => {}}
               />
             </div>
           ) : null}
@@ -98,7 +104,7 @@ export default function MatchPrediction({
           <button
             onClick={() => handleScoreChange("team1", team1Score - 1)}
             disabled={team1Score <= 0 || isCompleted}
-            className="w-8 h-8 bg-background text-foreground rounded flex items-center justify-center hover:bg-accent-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            className="w-8 h-8 bg-background text-foreground rounded flex items-center justify-center hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
             -
           </button>
@@ -108,7 +114,7 @@ export default function MatchPrediction({
           <button
             onClick={() => handleScoreChange("team1", team1Score + 1)}
             disabled={team1Score >= 2 || isCompleted}
-            className="w-8 h-8 bg-background text-foreground rounded flex items-center justify-center hover:bg-accent-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            className="w-8 h-8 bg-background text-foreground rounded flex items-center justify-center hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
             +
           </button>
@@ -120,12 +126,16 @@ export default function MatchPrediction({
       </div>
 
       {/* Team 2 */}
-      <div className="flex items-center gap-3">
+      <div
+        className={`flex items-center gap-3 ${
+          team2Wins ? "border-b-4 !border-green-500 pb-2" : ""
+        }`}
+      >
         <div className="flex items-center gap-2">
           <button
             onClick={() => handleScoreChange("team2", team2Score - 1)}
             disabled={team2Score <= 0 || isCompleted}
-            className="w-8 h-8 bg-background text-foreground rounded flex items-center justify-center hover:bg-accent-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            className="w-8 h-8 bg-background text-foreground rounded flex items-center justify-center hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
             -
           </button>
@@ -135,14 +145,14 @@ export default function MatchPrediction({
           <button
             onClick={() => handleScoreChange("team2", team2Score + 1)}
             disabled={team2Score >= 2 || isCompleted}
-            className="w-8 h-8 bg-background text-foreground rounded flex items-center justify-center hover:bg-accent-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            className="w-8 h-8 bg-background text-foreground rounded flex items-center justify-center hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
             +
           </button>
         </div>
         <div className="flex items-center gap-2">
           {team2.logo_url ? (
-            <div className="relative w-6 h-6">
+            <div className="relative w-8 h-8">
               <Image
                 src={team2.logo_url}
                 alt={`${team2.name} logo`}
