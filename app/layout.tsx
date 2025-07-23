@@ -14,6 +14,13 @@ export const metadata: Metadata = {
     "Interactive VCT standings predictor for Valorant esports. Predict match outcomes and see how your favorite teams can qualify for playoffs.",
   keywords:
     "VCT, Valorant, esports, standings, predictions, Valorant Champions Tour",
+  icons: {
+    icon: [
+      { url: "/vct_logo.png", sizes: "32x32", type: "image/png" },
+      { url: "/vct_logo.png", sizes: "16x16", type: "image/png" },
+    ],
+    apple: "/vct_logo.png",
+  },
 };
 
 export const viewport: Viewport = {
