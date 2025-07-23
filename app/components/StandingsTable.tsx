@@ -67,7 +67,7 @@ export default function StandingsTable({
                 W-L
               </th>
               <th className="text-left py-3 px-2 text-sm font-medium text-gray-400">
-                Map Record
+                Maps
               </th>
               <th className="text-left py-3 px-2 text-sm font-medium text-gray-400">
                 Rounds

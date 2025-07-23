@@ -66,18 +66,13 @@ export default function MatchPrediction({
   return (
     <div
       className={`flex items-center justify-between p-4 rounded-lg ${
-        isCompleted ? "bg-accent/50 border border-green-500/20" : "bg-accent"
+        isCompleted ? "bg-accent/50 border !border-green-500/20" : "bg-accent"
       }`}
     >
-      {isCompleted && (
-        <div className="absolute -top-2 -right-2 bg-emerald-500 text-white text-xs px-2 py-1 rounded-full">
-          COMPLETED
-        </div>
-      )}
       {/* Team 1 */}
       <div
         className={`flex items-center gap-3 ${
-          team1Wins ? "border-b-4 !border-green-500 pb-2" : ""
+          team1Wins ? "border-b-4 !border-emerald-600 pb-2" : ""
         }`}
       >
         <div className="flex items-center gap-2">
@@ -120,15 +115,13 @@ export default function MatchPrediction({
           </button>
         </div>
       </div>
-
       <div className="flex justify-center">
         <span className="text-sm text-gray-400">VS</span>
       </div>
-
       {/* Team 2 */}
       <div
         className={`flex items-center gap-3 ${
-          team2Wins ? "border-b-4 !border-green-500 pb-2" : ""
+          team2Wins ? "border-b-4 !border-emerald-600 pb-2" : ""
         }`}
       >
         <div className="flex items-center gap-2">

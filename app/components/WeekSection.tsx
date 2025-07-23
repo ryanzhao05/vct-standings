@@ -40,7 +40,7 @@ export default function WeekSection({
         <div className="flex items-center gap-3">
           <h3 className="text-lg font-semibold text-white">{title}</h3>
           {isWeekCompleted && (
-            <div className="bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+            <div className="bg-emerald-600 text-white text-xs px-2 py-1 rounded-full">
               COMPLETED
             </div>
           )}
