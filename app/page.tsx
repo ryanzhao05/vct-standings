@@ -8,6 +8,7 @@ import GroupMatches from "./components/GroupMatches";
 import Notification from "./components/Notification";
 import { calculateStandings } from "../lib/standings-calculator";
 import { getTeamsByRegion, getMatchesByRegion } from "../lib/supabase-data";
+import { dataCache } from "../lib/data-cache";
 import {
   getPredictionsForRegion,
   savePrediction,
@@ -43,6 +44,34 @@ export default function Home() {
     { id: "pacific", name: "Pacific" },
     { id: "china", name: "China" },
   ] as const;
+
+  // Preload data for other regions in the background
+  useEffect(() => {
+    const preloadOtherRegions = async () => {
+      const otherRegions = regions.filter((r) => r.id !== selectedRegion);
+
+      for (const region of otherRegions) {
+        // Only preload if not already cached
+        if (!dataCache.hasCachedData(region.id)) {
+          try {
+            const [teamsData, matchesData] = await Promise.all([
+              getTeamsByRegion(region.id),
+              getMatchesByRegion(region.id),
+            ]);
+
+            dataCache.setTeams(region.id, teamsData);
+            dataCache.setMatches(region.id, matchesData);
+          } catch (error) {
+            console.error(`Error preloading data for ${region.id}:`, error);
+          }
+        }
+      }
+    };
+
+    // Preload after a short delay to not interfere with current region loading
+    const timer = setTimeout(preloadOtherRegions, 1000);
+    return () => clearTimeout(timer);
+  }, [selectedRegion]);
 
   useEffect(() => {
     const shareData = extractShareDataFromUrl();
@@ -86,32 +115,48 @@ export default function Home() {
   // Fetch data when region changes
   useEffect(() => {
     async function fetchData() {
-      setLoading(true);
-      try {
-        const [teamsData, matchesData] = await Promise.all([
-          getTeamsByRegion(selectedRegion),
-          getMatchesByRegion(selectedRegion),
-        ]);
-        setTeams(teamsData);
-        setMatches(matchesData);
+      // Check if we have cached data
+      const cachedTeams = dataCache.getTeams(selectedRegion);
+      const cachedMatches = dataCache.getMatches(selectedRegion);
 
-        // Load user's predictions for this region
-        const userPredictions = getPredictionsForRegion(selectedRegion);
-        const predictionsMap: {
-          [key: number]: { team1Score: number; team2Score: number };
-        } = {};
-        userPredictions.forEach((pred) => {
-          predictionsMap[pred.matchId] = {
-            team1Score: pred.team1Score,
-            team2Score: pred.team2Score,
-          };
-        });
-        setPredictions(predictionsMap);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        setLoading(false);
+      if (cachedTeams && cachedMatches) {
+        // Use cached data
+        setTeams(cachedTeams);
+        setMatches(cachedMatches);
+      } else {
+        // Fetch fresh data
+        setLoading(true);
+        try {
+          const [teamsData, matchesData] = await Promise.all([
+            getTeamsByRegion(selectedRegion),
+            getMatchesByRegion(selectedRegion),
+          ]);
+
+          // Cache the data
+          dataCache.setTeams(selectedRegion, teamsData);
+          dataCache.setMatches(selectedRegion, matchesData);
+
+          setTeams(teamsData);
+          setMatches(matchesData);
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        } finally {
+          setLoading(false);
+        }
       }
+
+      // Load user's predictions for this region
+      const userPredictions = getPredictionsForRegion(selectedRegion);
+      const predictionsMap: {
+        [key: number]: { team1Score: number; team2Score: number };
+      } = {};
+      userPredictions.forEach((pred) => {
+        predictionsMap[pred.matchId] = {
+          team1Score: pred.team1Score,
+          team2Score: pred.team2Score,
+        };
+      });
+      setPredictions(predictionsMap);
     }
 
     fetchData();
