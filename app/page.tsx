@@ -5,6 +5,7 @@ import Header from "./components/Header";
 import RegionTabs from "./components/RegionTabs";
 import StandingsTable from "./components/StandingsTable";
 import GroupMatches from "./components/GroupMatches";
+import Notification from "./components/Notification";
 import { calculateStandings } from "../lib/standings-calculator";
 import { getTeamsByRegion, getMatchesByRegion } from "../lib/supabase-data";
 import {
@@ -12,6 +13,12 @@ import {
   savePrediction,
   deleteAllPredictions,
 } from "../lib/local-storage";
+import {
+  generateShareUrl,
+  copyToClipboard,
+  extractShareDataFromUrl,
+  formatShareData,
+} from "../lib/share-utils";
 import { Team, MatchWithTeams } from "../lib/supabase";
 
 type Region = "americas" | "emea" | "pacific" | "china";
@@ -24,6 +31,11 @@ export default function Home() {
   const [predictions, setPredictions] = useState<{
     [key: number]: { team1Score: number; team2Score: number };
   }>({});
+  const [notification, setNotification] = useState<{
+    message: string;
+    type: "success" | "error";
+    isVisible: boolean;
+  }>({ message: "", type: "success", isVisible: false });
 
   const regions = [
     { id: "americas", name: "Americas" },
@@ -31,6 +43,45 @@ export default function Home() {
     { id: "pacific", name: "Pacific" },
     { id: "china", name: "China" },
   ] as const;
+
+  useEffect(() => {
+    const shareData = extractShareDataFromUrl();
+    if (shareData) {
+      setSelectedRegion(shareData.region as Region);
+
+      // Convert predictions to the format expected by the app
+      const predictionsMap: {
+        [key: number]: { team1Score: number; team2Score: number };
+      } = {};
+      shareData.predictions.forEach((pred) => {
+        predictionsMap[pred.matchId] = {
+          team1Score: pred.team1Score,
+          team2Score: pred.team2Score,
+        };
+      });
+      setPredictions(predictionsMap);
+
+      shareData.predictions.forEach((pred) => {
+        savePrediction(
+          pred.matchId,
+          pred.team1Score,
+          pred.team2Score,
+          pred.region
+        );
+      });
+
+      // Clear the URL parameter
+      const url = new URL(window.location.href);
+      url.searchParams.delete("share");
+      window.history.replaceState({}, "", url.toString());
+
+      setNotification({
+        message: `Imported ${shareData.predictions.length} predictions`,
+        type: "success",
+        isVisible: true,
+      });
+    }
+  }, []);
 
   // Fetch data when region changes
   useEffect(() => {
@@ -111,9 +162,56 @@ export default function Home() {
     setPredictions({});
   };
 
-  const handleShareLink = () => {
-    // TODO: Implement share link functionality
-    console.log("Share current predictions");
+  const handleShareLink = async () => {
+    try {
+      // Get current predictions for the selected region
+      const currentPredictions = getPredictionsForRegion(selectedRegion);
+
+      if (currentPredictions.length === 0) {
+        setNotification({
+          message: "No predictions to share. Make some predictions first!",
+          type: "error",
+          isVisible: true,
+        });
+        return;
+      }
+
+      // Generate share URL
+      const shareUrl = generateShareUrl(currentPredictions, selectedRegion);
+
+      if (!shareUrl) {
+        setNotification({
+          message: "Failed to generate share link",
+          type: "error",
+          isVisible: true,
+        });
+        return;
+      }
+
+      // Copy to clipboard
+      const success = await copyToClipboard(shareUrl);
+
+      if (success) {
+        setNotification({
+          message: "Share link copied to clipboard!",
+          type: "success",
+          isVisible: true,
+        });
+      } else {
+        setNotification({
+          message: "Failed to copy to clipboard. Please copy manually.",
+          type: "error",
+          isVisible: true,
+        });
+      }
+    } catch (error) {
+      console.error("Error sharing predictions:", error);
+      setNotification({
+        message: "Failed to share predictions",
+        type: "error",
+        isVisible: true,
+      });
+    }
   };
 
   const handleRegionChange = (region: Region) => {
@@ -158,6 +256,14 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <Notification
+        message={notification.message}
+        type={notification.type}
+        isVisible={notification.isVisible}
+        onClose={() =>
+          setNotification((prev) => ({ ...prev, isVisible: false }))
+        }
+      />
       <Header
         selectedRegion={
           regions.find((r) => r.id === selectedRegion)?.name || "Americas"

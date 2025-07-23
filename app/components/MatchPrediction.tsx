@@ -28,8 +28,8 @@ export default function MatchPrediction({
   onScoreChange,
 }: MatchPredictionProps) {
   // Determine winner for green underline
-  const team1Wins = team1Score > team2Score;
-  const team2Wins = team2Score > team1Score;
+  const team1Wins = team1Score == 2;
+  const team2Wins = team2Score == 2;
 
   const handleScoreChange = (team: "team1" | "team2", newScore: number) => {
     if (isCompleted || newScore < 0 || newScore > 2) return;
