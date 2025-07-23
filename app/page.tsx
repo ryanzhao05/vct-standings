@@ -324,20 +324,43 @@ export default function Home() {
 
       {/* Main Table Content */}
       <main className="container mx-auto px-4 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <StandingsTable
-            title="Group Alpha"
-            subtitle="Top 4 teams qualify for playoffs"
-            standings={groupAlphaStandings}
-          />
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 lg:gap-6">
+          {/* Group Alpha Section */}
+          <div className="space-y-4 lg:space-y-6">
+            <StandingsTable
+              title="Group Alpha"
+              subtitle="Top 4 teams qualify for playoffs"
+              standings={groupAlphaStandings}
+            />
+            <div className="h-[500px] lg:h-[600px] xl:hidden">
+              <GroupMatches
+                title="Group Alpha Matches"
+                matches={groupAlphaMatches}
+                onMatchScoreChange={handleMatchScoreChange}
+                onReset={() => handleGroupReset(groupAlphaMatches)}
+              />
+            </div>
+          </div>
 
-          <StandingsTable
-            title="Group Omega"
-            subtitle="Top 4 teams qualify for playoffs"
-            standings={groupOmegaStandings}
-          />
+          {/* Group Omega Section */}
+          <div className="space-y-4 lg:space-y-6">
+            <StandingsTable
+              title="Group Omega"
+              subtitle="Top 4 teams qualify for playoffs"
+              standings={groupOmegaStandings}
+            />
+            <div className="h-[500px] lg:h-[600px] xl:hidden">
+              <GroupMatches
+                title="Group Omega Matches"
+                matches={groupOmegaMatches}
+                onMatchScoreChange={handleMatchScoreChange}
+                onReset={() => handleGroupReset(groupOmegaMatches)}
+              />
+            </div>
+          </div>
 
-          <div className="h-[600px]">
+          {/* Desktop only match sections */}
+          <div className="hidden xl:block h-[500px] lg:h-[600px]">
             <GroupMatches
               title="Group Alpha Matches"
               matches={groupAlphaMatches}
@@ -346,7 +369,7 @@ export default function Home() {
             />
           </div>
 
-          <div className="h-[600px]">
+          <div className="hidden xl:block h-[500px] lg:h-[600px]">
             <GroupMatches
               title="Group Omega Matches"
               matches={groupOmegaMatches}

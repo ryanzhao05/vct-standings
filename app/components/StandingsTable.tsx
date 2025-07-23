@@ -48,31 +48,31 @@ export default function StandingsTable({
   };
 
   return (
-    <div className="bg-card rounded-lg p-6 border border-border">
+    <div className="bg-card rounded-lg p-4 lg:p-6 border border-border">
       <div className="mb-4">
-        <h2 className="text-xl font-bold text-white">{title}</h2>
-        <p className="text-sm text-gray-400">{subtitle}</p>
+        <h2 className="text-lg lg:text-xl font-bold text-white">{title}</h2>
+        <p className="text-xs lg:text-sm text-gray-400">{subtitle}</p>
       </div>
       <div className="overflow-x-auto">
-        <table className="w-full">
+        <table className="w-full min-w-[600px]">
           <thead>
             <tr className="border-b border-border">
-              <th className="text-left py-3 px-2 text-sm font-medium text-gray-400">
+              <th className="text-left py-2 lg:py-3 px-1 lg:px-2 text-xs lg:text-sm font-medium text-gray-400">
                 #
               </th>
-              <th className="text-left py-3 px-2 text-sm font-medium text-gray-400">
+              <th className="text-left py-2 lg:py-3 px-1 lg:px-2 text-xs lg:text-sm font-medium text-gray-400">
                 Team
               </th>
-              <th className="text-left py-3 px-2 text-sm font-medium text-gray-400">
+              <th className="text-left py-2 lg:py-3 px-1 lg:px-2 text-xs lg:text-sm font-medium text-gray-400">
                 W-L
               </th>
-              <th className="text-left py-3 px-2 text-sm font-medium text-gray-400">
+              <th className="text-left py-2 lg:py-3 px-1 lg:px-2 text-xs lg:text-sm font-medium text-gray-400">
                 Maps
               </th>
-              <th className="text-left py-3 px-2 text-sm font-medium text-gray-400">
+              <th className="text-left py-2 lg:py-3 px-1 lg:px-2 text-xs lg:text-sm font-medium text-gray-400">
                 Rounds
               </th>
-              <th className="text-left py-3 px-2 text-sm font-medium text-gray-400">
+              <th className="text-left py-2 lg:py-3 px-1 lg:px-2 text-xs lg:text-sm font-medium text-gray-400">
                 Round Diff
               </th>
             </tr>
@@ -83,17 +83,17 @@ export default function StandingsTable({
                 key={team.id}
                 className={`border-b border-border/50 relative ${
                   team.isQualified
-                    ? "border-l-8 !border-l-emerald-600"
-                    : "border-l-8 !border-l-rose-500"
+                    ? "border-l-4 lg:border-l-8 !border-l-emerald-600"
+                    : "border-l-4 lg:border-l-8 !border-l-rose-500"
                 }`}
               >
-                <td className="py-3 px-4 text-sm text-white">
+                <td className="py-2 lg:py-3 px-2 lg:px-4 text-xs lg:text-sm text-white">
                   {team.position}
                 </td>
-                <td className="py-3 px-2 text-sm text-white">
-                  <div className="flex items-center gap-3">
+                <td className="py-2 lg:py-3 px-1 lg:px-2 text-xs lg:text-sm text-white">
+                  <div className="flex items-center gap-2 lg:gap-3">
                     {team.logo_url ? (
-                      <div className="relative w-8 h-8">
+                      <div className="relative w-6 h-6 lg:w-8 lg:h-8">
                         <Image
                           src={team.logo_url}
                           alt={`${team.name} logo`}
@@ -109,20 +109,24 @@ export default function StandingsTable({
                       {team.abbreviation ||
                         team.name.substring(0, 3).toUpperCase()}
                     </span>
-                    <span className="ml-2 font-semibold">{team.name}</span>
+                    <span className="ml-1 lg:ml-2 font-semibold truncate max-w-[80px] lg:max-w-none">
+                      {team.name}
+                    </span>
                   </div>
                 </td>
-                <td className="py-3 px-2 text-sm text-white">
+                <td className="py-2 lg:py-3 px-1 lg:px-2 text-xs lg:text-sm text-white">
                   {team.wins}-{team.losses}
                 </td>
-                <td className="py-3 px-2 text-sm text-white">
+                <td className="py-2 lg:py-3 px-1 lg:px-2 text-xs lg:text-sm text-white">
                   {getMapRecord(team)}
                 </td>
-                <td className="py-3 px-2 text-sm text-white">
+                <td className="py-2 lg:py-3 px-1 lg:px-2 text-xs lg:text-sm text-white">
                   {getRoundsRecord(team)}
                 </td>
                 <td
-                  className={`py-3 px-2 text-sm ${getDifferentialColor(team)}`}
+                  className={`py-2 lg:py-3 px-1 lg:px-2 text-xs lg:text-sm ${getDifferentialColor(
+                    team
+                  )}`}
                 >
                   {getRoundDifferential(team)}
                 </td>

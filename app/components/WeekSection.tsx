@@ -35,10 +35,12 @@ export default function WeekSection({
     >
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full px-6 py-4 flex items-center justify-between hover:bg-accent/50 transition-colors cursor-pointer relative"
+        className="w-full px-4 lg:px-6 py-3 lg:py-4 flex items-center justify-between hover:bg-accent/50 transition-colors cursor-pointer relative"
       >
-        <div className="flex items-center gap-3">
-          <h3 className="text-lg font-semibold text-white">{title}</h3>
+        <div className="flex items-center gap-2 lg:gap-3">
+          <h3 className="text-base lg:text-lg font-semibold text-white">
+            {title}
+          </h3>
           {isWeekCompleted && (
             <div className="bg-emerald-600 text-white text-xs px-2 py-1 rounded-full">
               COMPLETED
@@ -46,14 +48,14 @@ export default function WeekSection({
           )}
         </div>
         {isExpanded ? (
-          <ChevronDownIcon className="h-5 w-5 text-gray-400" />
+          <ChevronDownIcon className="h-4 w-4 lg:h-5 lg:w-5 text-gray-400" />
         ) : (
-          <ChevronRightIcon className="h-5 w-5 text-gray-400" />
+          <ChevronRightIcon className="h-4 w-4 lg:h-5 lg:w-5 text-gray-400" />
         )}
       </button>
 
       {isExpanded && (
-        <div className="mt-4 px-6 pb-4 space-y-4">
+        <div className="mt-3 lg:mt-4 px-4 lg:px-6 pb-3 lg:pb-4 space-y-3 lg:space-y-4">
           {matches.map((match) => (
             <MatchPrediction
               key={match.id}
@@ -86,9 +88,9 @@ export default function WeekSection({
                     onMatchScoreChange(match.id, 0, 0);
                   });
                 }}
-                className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm cursor-pointer flex items-center gap-2 mx-auto"
+                className="px-3 lg:px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-xs lg:text-sm cursor-pointer flex items-center gap-2 mx-auto"
               >
-                <RotateCcwIcon className="h-4 w-4" />
+                <RotateCcwIcon className="h-3 w-3 lg:h-4 lg:w-4" />
                 Reset Week
               </button>
             </div>

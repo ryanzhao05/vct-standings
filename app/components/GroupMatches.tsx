@@ -27,13 +27,13 @@ export default function GroupMatches({
 
   return (
     <div
-      className={`bg-card rounded-lg p-6 border h-full flex flex-col ${
+      className={`bg-card rounded-lg p-4 lg:p-6 border h-full flex flex-col ${
         isGroupCompleted ? "border-green-500/30" : "border-border"
       }`}
     >
       <div className="mb-4">
-        <div className="flex items-center gap-3">
-          <h2 className="text-xl font-bold text-white">{title}</h2>
+        <div className="flex items-center gap-2 lg:gap-3">
+          <h2 className="text-lg lg:text-xl font-bold text-white">{title}</h2>
           {isGroupCompleted && (
             <div className="bg-green-500 text-white text-xs px-2 py-1 rounded-full">
               ALL COMPLETED
@@ -41,7 +41,7 @@ export default function GroupMatches({
           )}
         </div>
       </div>
-      <div className="flex-1 overflow-y-auto space-y-4 pr-2">
+      <div className="flex-1 overflow-y-auto space-y-3 lg:space-y-4 pr-2">
         {weeks.map((week) => (
           <WeekSection
             key={week.week}
