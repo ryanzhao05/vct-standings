@@ -12,6 +12,7 @@ import { dataCache } from "../lib/data-cache";
 import {
   getPredictionsForRegion,
   savePrediction,
+  deletePrediction,
   deleteAllPredictions,
 } from "../lib/local-storage";
 import {
@@ -191,6 +192,19 @@ export default function Home() {
       team2_score: predictions[match.id]?.team2Score ?? match.team2_score,
     }));
 
+  // Calculate predictions per group
+  const getGroupPredictions = (groupMatches: MatchWithTeams[]) => {
+    return groupMatches.filter(
+      (match) =>
+        predictions[match.id] &&
+        (predictions[match.id].team1Score > 0 ||
+          predictions[match.id].team2Score > 0)
+    ).length;
+  };
+
+  const groupAlphaPredictionCount = getGroupPredictions(groupAlphaMatches);
+  const groupOmegaPredictionCount = getGroupPredictions(groupOmegaMatches);
+
   // Calculate standings based on current match predictions
   const groupAlphaStandings = calculateStandings(
     groupAlphaTeams,
@@ -212,7 +226,11 @@ export default function Home() {
       // Get current predictions for the selected region
       const currentPredictions = getPredictionsForRegion(selectedRegion);
 
-      if (currentPredictions.length === 0) {
+      const activePredictions = currentPredictions.filter(
+        (pred) => pred.team1Score > 0 || pred.team2Score > 0
+      );
+
+      if (activePredictions.length === 0) {
         setNotification({
           message: "No predictions to share. Make some predictions first!",
           type: "error",
@@ -222,7 +240,7 @@ export default function Home() {
       }
 
       // Generate share URL
-      const shareUrl = generateShareUrl(currentPredictions, selectedRegion);
+      const shareUrl = generateShareUrl(activePredictions, selectedRegion);
 
       if (!shareUrl) {
         setNotification({
@@ -268,14 +286,25 @@ export default function Home() {
     team1Score: number,
     team2Score: number
   ) => {
-    // Save prediction to local storage
-    savePrediction(matchId, team1Score, team2Score, selectedRegion);
+    // If both scores are 0, remove the prediction
+    if (team1Score === 0 && team2Score === 0) {
+      deletePrediction(matchId, selectedRegion);
 
-    // Update local state
-    setPredictions((prev) => ({
-      ...prev,
-      [matchId]: { team1Score, team2Score },
-    }));
+      setPredictions((prev) => {
+        const newPredictions = { ...prev };
+        delete newPredictions[matchId];
+        return newPredictions;
+      });
+    } else {
+      // Save prediction to local storage
+      savePrediction(matchId, team1Score, team2Score, selectedRegion);
+
+      // Update local state
+      setPredictions((prev) => ({
+        ...prev,
+        [matchId]: { team1Score, team2Score },
+      }));
+    }
   };
 
   const handleGroupReset = (groupMatches: MatchWithTeams[]) => {
@@ -331,6 +360,8 @@ export default function Home() {
               title="Group Alpha"
               subtitle="Top 4 teams qualify for playoffs"
               standings={groupAlphaStandings}
+              hasPredictions={groupAlphaPredictionCount > 0}
+              predictionCount={groupAlphaPredictionCount}
             />
             <div className="h-[500px] lg:h-[600px] xl:hidden">
               <GroupMatches
@@ -348,6 +379,8 @@ export default function Home() {
               title="Group Omega"
               subtitle="Top 4 teams qualify for playoffs"
               standings={groupOmegaStandings}
+              hasPredictions={groupOmegaPredictionCount > 0}
+              predictionCount={groupOmegaPredictionCount}
             />
             <div className="h-[500px] lg:h-[600px] xl:hidden">
               <GroupMatches

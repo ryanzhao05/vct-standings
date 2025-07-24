@@ -32,7 +32,8 @@ export function decodePredictions(encodedData: string): { region: string; predic
     const predictions: LocalPrediction[] = compactData.p.map((p: [number, number, number]) => ({
       matchId: p[0],
       team1Score: p[1],
-      team2Score: p[2]
+      team2Score: p[2],
+      region: compactData.r
     }));
     
     return {

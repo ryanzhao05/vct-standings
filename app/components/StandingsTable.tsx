@@ -19,12 +19,16 @@ interface StandingsTableProps {
   title: string;
   subtitle: string;
   standings: TeamStanding[];
+  hasPredictions?: boolean;
+  predictionCount?: number;
 }
 
 export default function StandingsTable({
   title,
   subtitle,
   standings,
+  hasPredictions = false,
+  predictionCount = 0,
 }: StandingsTableProps) {
   const getMapRecord = (team: TeamStanding) => {
     return `${team.mapWins}-${team.mapLosses}`;
@@ -48,10 +52,35 @@ export default function StandingsTable({
   };
 
   return (
-    <div className="bg-card rounded-lg p-4 lg:p-6 border border-border">
+    <div
+      className={`rounded-lg p-4 lg:p-6 border border-border ${
+        hasPredictions
+          ? "bg-gradient-to-r from-blue-900/20 to-purple-900/20 border-blue-500/30"
+          : "bg-card"
+      }`}
+    >
       <div className="mb-4">
-        <h2 className="text-lg lg:text-xl font-bold text-white">{title}</h2>
-        <p className="text-xs lg:text-sm text-gray-400">{subtitle}</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-lg lg:text-xl font-bold text-white">{title}</h2>
+            <p className="text-xs lg:text-sm text-gray-400">{subtitle}</p>
+          </div>
+
+          {hasPredictions && (
+            <div className="flex items-center gap-2 px-4 py-2 bg-blue-600/20 border border-blue-500/30 rounded-lg min-w-[120px]">
+              <span className="text-blue-400 text-sm">🔮</span>
+              <div className="text-right flex-1">
+                <div className="text-xs font-semibold text-blue-300">
+                  PREDICTED STANDINGS
+                </div>
+                <div className="text-xs text-blue-200">
+                  {predictionCount} match{predictionCount !== 1 ? "es" : ""}{" "}
+                  predicted
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full min-w-[600px]">
