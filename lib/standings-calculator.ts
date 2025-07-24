@@ -61,13 +61,24 @@ export function calculateStandings(teams: Team[], matches: MatchWithTeams[]): Te
       
       // Round differentials
       if (!match.is_completed) {
-        // Default to 13-9
-        const mapsWon = team1Score;
-        const mapsLost = team2Score;
-        team1.roundWins += mapsWon * 13;
-        team1.roundLosses += mapsWon * 9; 
-        team2.roundWins += mapsLost * 13;
-        team2.roundLosses += mapsLost * 9; 
+        const totalMaps = team1Score + team2Score;
+        
+        // For each map, determine winner and apply 13-9 scoring
+        for (let map = 0; map < totalMaps; map++) {
+          if (map < team1Score) {
+            // Team 1 won 
+            team1.roundWins += 13;
+            team1.roundLosses += 9;
+            team2.roundWins += 9;
+            team2.roundLosses += 13;
+          } else {
+            // Team 2 won 
+            team2.roundWins += 13;
+            team2.roundLosses += 9;
+            team1.roundWins += 9;
+            team1.roundLosses += 13;
+          }
+        }
       }
       
     } else if (team2Score > team1Score) {
@@ -83,13 +94,25 @@ export function calculateStandings(teams: Team[], matches: MatchWithTeams[]): Te
       
       // Round differentials 
       if (!match.is_completed) {
-        // Default to 13-9
-        const mapsWon = team2Score;
-        const mapsLost = team1Score;
-        team2.roundWins += mapsWon * 13;
-        team2.roundLosses += mapsWon * 9;
-        team1.roundWins += mapsLost * 13;
-        team1.roundLosses += mapsLost * 9; 
+        // Calculate per individual map
+        const totalMaps = team1Score + team2Score;
+        
+        // For each map, determine winner and apply 13-9 scoring
+        for (let map = 0; map < totalMaps; map++) {
+          if (map < team2Score) {
+            // Team 2 won 
+            team2.roundWins += 13;
+            team2.roundLosses += 9;
+            team1.roundWins += 9;
+            team1.roundLosses += 13;
+          } else {
+            // Team 1 won 
+            team1.roundWins += 13;
+            team1.roundLosses += 9;
+            team2.roundWins += 9;
+            team2.roundLosses += 13;
+          }
+        }
       }
       
     } else {
@@ -100,12 +123,25 @@ export function calculateStandings(teams: Team[], matches: MatchWithTeams[]): Te
       
       // Round differentials 
       if (!match.is_completed) {
-        // Default to 13-9
-        const mapsPlayed = team1Score; 
-        team1.roundWins += mapsPlayed * 13;
-        team1.roundLosses += mapsPlayed * 9;
-        team2.roundWins += mapsPlayed * 13;
-        team2.roundLosses += mapsPlayed * 9;
+        // Calculate per individual map
+        const totalMaps = team1Score + team2Score;
+        
+        // For each map, determine winner and apply 13-9 scoring
+        for (let map = 0; map < totalMaps; map++) {
+          if (map < team1Score) {
+            // Team 1 won 
+            team1.roundWins += 13;
+            team1.roundLosses += 9;
+            team2.roundWins += 9;
+            team2.roundLosses += 13;
+          } else {
+            // Team 2 won 
+            team2.roundWins += 13;
+            team2.roundLosses += 9;
+            team1.roundWins += 9;
+            team1.roundLosses += 13;
+          }
+        }
       }
     }
   });
@@ -113,8 +149,9 @@ export function calculateStandings(teams: Team[], matches: MatchWithTeams[]): Te
   // Convert to array and sort by standings criteria
   const standingsArray = Object.values(standings);
   
+  // Tie-breakers
   standingsArray.sort((a, b) => {
-    // Primary: Win-Loss record
+    //  Win-Loss record
     const aWinRate = a.wins / (a.wins + a.losses) || 0;
     const bWinRate = b.wins / (b.wins + b.losses) || 0;
     
@@ -122,7 +159,12 @@ export function calculateStandings(teams: Team[], matches: MatchWithTeams[]): Te
       return bWinRate - aWinRate;
     }
     
-    // Secondary: Map differential
+    // Number of losses 
+    if (a.losses !== b.losses) {
+      return a.losses - b.losses;
+    }
+    
+    // Map differential
     const aMapDiff = a.mapWins - a.mapLosses;
     const bMapDiff = b.mapWins - b.mapLosses;
     
@@ -130,7 +172,7 @@ export function calculateStandings(teams: Team[], matches: MatchWithTeams[]): Te
       return bMapDiff - aMapDiff;
     }
     
-    // Tertiary: Round differential
+    // Round differential
     const aRoundDiff = a.roundWins - a.roundLosses;
     const bRoundDiff = b.roundWins - b.roundLosses;
     
