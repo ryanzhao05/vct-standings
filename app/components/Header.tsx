@@ -35,6 +35,10 @@ export default function Header({
               Predict match outcomes and see how your favorite teams can qualify
               for playoffs!
             </p>
+            <p className="text-gray-400 mt-1 lg:mt-1 text-xs lg:text-sm">
+              Note: Each map prediction is assumed to be 13-9, custom round
+              predictions coming soon!
+            </p>
             <p className="text-gray-200 font-semibold mt-1 text-sm lg:text-base">
               2025 {selectedRegion} Stage 2
             </p>
