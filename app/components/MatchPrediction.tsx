@@ -72,18 +72,13 @@ export default function MatchPrediction({
       {/* Team 1 */}
       <div
         className={`flex items-center justify-center gap-2 lg:gap-3 w-full sm:w-auto ${
-          team1Wins
-            ? "sm:border-b-2 lg:border-b-4 !border-emerald-600 sm:pb-1 lg:pb-2"
-            : ""
+          team1Wins ? "relative" : ""
         }`}
       >
-        <div
-          className={`flex items-center gap-2 lg:gap-3 ${
-            team1Wins
-              ? "border-b-2 !border-emerald-600 pb-1 sm:border-b-0 sm:pb-0"
-              : ""
-          }`}
-        >
+        <div className="flex items-center gap-2 lg:gap-3">
+          {team1Wins && (
+            <div className="absolute -bottom-2 left-0 right-0 h-0.5 lg:h-1 bg-emerald-600"></div>
+          )}
           <div className="flex items-center gap-1 lg:gap-2">
             {team1.logo_url ? (
               <div className="relative w-6 h-6 lg:w-8 lg:h-8">
@@ -131,18 +126,13 @@ export default function MatchPrediction({
       {/* Team 2 */}
       <div
         className={`flex items-center justify-center gap-2 lg:gap-3 w-full sm:w-auto ${
-          team2Wins
-            ? "sm:border-b-2 lg:border-b-4 !border-emerald-600 sm:pb-1 lg:pb-2"
-            : ""
+          team2Wins ? "relative" : ""
         }`}
       >
-        <div
-          className={`flex items-center gap-2 lg:gap-3 ${
-            team2Wins
-              ? "border-b-2 !border-emerald-600 pb-1 sm:border-b-0 sm:pb-0"
-              : ""
-          }`}
-        >
+        <div className="flex items-center gap-2 lg:gap-3">
+          {team2Wins && (
+            <div className="absolute -bottom-2 left-0 right-0 h-0.5 lg:h-1 bg-emerald-600"></div>
+          )}
           <div className="flex items-center gap-1 lg:gap-2">
             {team2.logo_url ? (
               <div className="relative w-6 h-6 lg:w-8 lg:h-8">
