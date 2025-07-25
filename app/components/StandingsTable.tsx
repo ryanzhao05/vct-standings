@@ -60,17 +60,17 @@ export default function StandingsTable({
       }`}
     >
       <div className="mb-4">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between min-h-[60px] lg:min-h-[80px]">
           <div>
             <h2 className="text-lg lg:text-xl font-bold text-white">{title}</h2>
             <p className="text-xs lg:text-sm text-gray-400">{subtitle}</p>
           </div>
 
-          {hasPredictions && (
-            <div className="flex items-center gap-2 px-4 py-2 bg-blue-600/20 border border-blue-500/30 rounded-lg min-w-[120px]">
-              <span className="text-blue-400 text-sm">🔮</span>
-              <div className="text-right flex-1">
-                <div className="text-xs font-semibold text-blue-300">
+          {hasPredictions ? (
+            <div className="flex flex-col sm:flex-row items-center gap-2 px-4 py-2 bg-blue-600/20 border border-blue-500/30 rounded-lg min-w-[120px]">
+              <div className="text-center sm:text-right flex-1">
+                <div className="text-xs font-semibold text-blue-300 flex items-center justify-center sm:justify-end gap-1">
+                  <span className="text-blue-400 text-sm">🔮</span>
                   PREDICTED STANDINGS
                 </div>
                 <div className="text-xs text-blue-200">
@@ -79,6 +79,8 @@ export default function StandingsTable({
                 </div>
               </div>
             </div>
+          ) : (
+            <div className="min-w-[120px]"></div>
           )}
         </div>
       </div>
