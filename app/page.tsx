@@ -7,7 +7,11 @@ import StandingsTable from "./components/StandingsTable";
 import GroupMatches from "./components/GroupMatches";
 import Notification from "./components/Notification";
 import { calculateStandings } from "../lib/standings-calculator";
-import { getTeamsByRegion, getMatchesByRegion } from "../lib/supabase-data";
+import {
+  getTeamsByRegion,
+  getMatchesByRegion,
+  trackShareEvent,
+} from "../lib/supabase-data";
 import { dataCache } from "../lib/data-cache";
 import {
   getPredictionsForRegion,
@@ -251,10 +255,15 @@ export default function Home() {
         return;
       }
 
-      // Copy to clipboard
       const success = await copyToClipboard(shareUrl);
 
       if (success) {
+        await trackShareEvent(
+          selectedRegion,
+          activePredictions.length,
+          shareUrl
+        );
+
         setNotification({
           message: "Share link copied to clipboard!",
           type: "success",
@@ -262,8 +271,8 @@ export default function Home() {
         });
       } else {
         setNotification({
-          message: "Failed to copy to clipboard. Please copy manually.",
-          type: "error",
+          message: `Share link ready! Click to copy: ${shareUrl}`,
+          type: "success",
           isVisible: true,
         });
       }

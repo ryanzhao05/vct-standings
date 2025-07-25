@@ -34,4 +34,23 @@ export async function getMatchesByRegion(region: string): Promise<MatchWithTeams
   }
 
   return data || [];
+}
+
+// Track share button events
+export async function trackShareEvent(region: string, predictionCount: number, shareUrl: string): Promise<void> {
+  try {
+    const { error } = await supabase
+      .from('share_events')
+      .insert({
+        region,
+        prediction_count: predictionCount,
+        share_url: shareUrl
+      });
+
+    if (error) {
+      console.error('Failed to track share event:', error);
+    }
+  } catch (error) {
+    console.error('Error tracking share event:', error);
+  }
 } 
