@@ -109,14 +109,16 @@ class ServerPandaScoreAPI {
 const pandascoreAPI = new ServerPandaScoreAPI();
 
 // Create server-side Supabase client with service role key
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-const supabase = createClient(supabaseUrl, supabaseServiceKey, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false
-  }
-});
+function createSupabaseClient() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+  return createClient(supabaseUrl, supabaseServiceKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false
+    }
+  });
+}
 
 export interface SyncResult {
   success: boolean;
@@ -179,6 +181,7 @@ export async function syncVCTTeams(): Promise<SyncResult> {
     console.log(`Total unique teams found: ${processedTeams.length}`);
     
     // Only insert teams that don't exist yet, don't update existing ones
+    const supabase = createSupabaseClient();
     const { error } = await supabase
       .from('teams')
       .upsert(processedTeams, { 
@@ -221,6 +224,7 @@ export async function syncCompletedMatches(region: string, seriesId: number): Pr
     console.log(`Found ${matches.length} completed matches for ${region} out of ${allMatches.length} total matches`);
     
     // Get teams mapping from our database
+    const supabase = createSupabaseClient();
     const { data: teams } = await supabase
       .from('teams')
       .select('id, pandascore_id')
@@ -322,6 +326,7 @@ export async function syncUpcomingMatches(region: string, seriesId: number): Pro
     console.log(`Found ${matches.length} upcoming matches for ${region} out of ${allMatches.length} total matches`);
     
     // Get teams mapping from our database
+    const supabase = createSupabaseClient();
     const { data: teams } = await supabase
       .from('teams')
       .select('id, pandascore_id')
@@ -475,6 +480,7 @@ export async function getSyncStatus(): Promise<{
     // Get data counts for each region
     const regions = ['americas', 'emea', 'pacific', 'china'];
     const status: Record<string, { teams: number; completedMatches: number; upcomingMatches: number }> = {};
+    const supabase = createSupabaseClient();
     
     for (const region of regions) {
       const { data: teams } = await supabase
