@@ -53,13 +53,13 @@ export default function StandingsTable({
 
   return (
     <div
-      className={`rounded-lg p-4 lg:p-6 border border-border ${
+      className={`rounded-lg pt-2 pb-4 px-4 lg:pt-3 lg:pb-6 lg:px-6 border border-border ${
         hasPredictions
           ? "bg-gradient-to-r from-blue-900/20 to-purple-900/20 border-blue-500/30"
           : "bg-card"
       }`}
     >
-      <div className="mb-4">
+      <div>
         <div className="flex items-center justify-between min-h-[60px] lg:min-h-[80px]">
           <div>
             <h2 className="text-lg lg:text-xl font-bold text-white">{title}</h2>
