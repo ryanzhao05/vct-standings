@@ -53,4 +53,31 @@ export async function trackShareEvent(region: string, predictionCount: number, s
   } catch (error) {
     console.error('Error tracking share event:', error);
   }
+}
+
+// Contact form submission
+export async function submitContactForm(data: {
+  email: string;
+  subject: string;
+  message: string;
+}): Promise<{ success: boolean; error?: string }> {
+  try {
+    const { error } = await supabase
+      .from('contact_messages')
+      .insert({
+        email: data.email,
+        subject: data.subject,
+        message: data.message
+      });
+
+    if (error) {
+      console.error('Failed to submit contact form:', error);
+      return { success: false, error: error.message };
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error('Error submitting contact form:', error);
+    return { success: false, error: 'Failed to submit contact form' };
+  }
 } 

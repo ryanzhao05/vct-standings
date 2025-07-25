@@ -6,6 +6,7 @@ import RegionTabs from "./components/RegionTabs";
 import StandingsTable from "./components/StandingsTable";
 import GroupMatches from "./components/GroupMatches";
 import Notification from "./components/Notification";
+import ContactModal from "./components/ContactModal";
 import { calculateStandings } from "../lib/standings-calculator";
 import {
   getTeamsByRegion,
@@ -42,6 +43,7 @@ export default function Home() {
     type: "success" | "error";
     isVisible: boolean;
   }>({ message: "", type: "success", isVisible: false });
+  const [showContactModal, setShowContactModal] = useState(false);
 
   const regions = [
     { id: "americas", name: "Americas" },
@@ -353,6 +355,7 @@ export default function Home() {
         }
         onResetAll={handleResetAll}
         onShareLink={handleShareLink}
+        onContactClick={() => setShowContactModal(true)}
       />
 
       <RegionTabs
@@ -421,6 +424,11 @@ export default function Home() {
           </div>
         </div>
       </main>
+
+      <ContactModal
+        isOpen={showContactModal}
+        onClose={() => setShowContactModal(false)}
+      />
 
       <footer className="border-t border-border bg-card mt-8">
         <div className="container mx-auto px-4 py-4">

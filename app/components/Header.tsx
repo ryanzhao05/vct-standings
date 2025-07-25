@@ -1,16 +1,18 @@
-import { RotateCcw, Share2 } from "lucide-react";
+import { RotateCcw, Share2, Mail } from "lucide-react";
 import Image from "next/image";
 
 interface HeaderProps {
   selectedRegion: string;
   onResetAll: () => void;
   onShareLink: () => void;
+  onContactClick: () => void;
 }
 
 export default function Header({
   selectedRegion,
   onResetAll,
   onShareLink,
+  onContactClick,
 }: HeaderProps) {
   return (
     <header className="border-b border-border bg-card">
@@ -53,6 +55,14 @@ export default function Header({
                 Reset Current Region Predictions
               </span>
               <span className="sm:hidden">Reset Predictions</span>
+            </button>
+            <button
+              onClick={onContactClick}
+              className="flex items-center justify-center gap-2 px-3 py-2 lg:px-4 lg:py-2 bg-accent text-accent-foreground rounded-lg hover:bg-accent/80 transition-colors cursor-pointer text-sm lg:text-base"
+            >
+              <Mail className="w-4 h-4" />
+              <span className="hidden sm:inline">Contact</span>
+              <span className="sm:hidden">Contact</span>
             </button>
             <button
               onClick={onShareLink}
