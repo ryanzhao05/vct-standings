@@ -145,7 +145,7 @@ export default function StandingsTable({
                     </span>
                   </div>
                 </td>
-                <td className="py-2 lg:py-3 px-1 lg:px-2 text-xs lg:text-sm text-white">
+                <td className="py-2 lg:py-3 px-1 lg:px-2 text-xs lg:text-sm text-white font-extrabold">
                   {team.wins}-{team.losses}
                 </td>
                 <td className="py-2 lg:py-3 px-1 lg:px-2 text-xs lg:text-sm text-white">
