@@ -38,8 +38,8 @@ export default function Header({
               for playoffs!
             </p>
             <p className="text-gray-400 mt-1 lg:mt-1 text-xs lg:text-sm">
-              Note: Each map prediction is assumed to be 13-9, custom round
-              predictions coming soon!
+              Note: Each map prediction is assumed to be 13-7. If you find any
+              bugs, please let me know!
             </p>
             <p className="text-gray-200 font-semibold mt-1 text-sm lg:text-base">
               2025 {selectedRegion} Stage 2

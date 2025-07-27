@@ -63,19 +63,19 @@ export function calculateStandings(teams: Team[], matches: MatchWithTeams[]): Te
       if (!match.is_completed) {
         const totalMaps = team1Score + team2Score;
         
-        // For each map, determine winner and apply 13-9 scoring
+        // For each map, determine winner and apply 13-7 scoring
         for (let map = 0; map < totalMaps; map++) {
           if (map < team1Score) {
             // Team 1 won 
             team1.roundWins += 13;
-            team1.roundLosses += 9;
-            team2.roundWins += 9;
+            team1.roundLosses += 7;
+            team2.roundWins += 7;
             team2.roundLosses += 13;
           } else {
             // Team 2 won 
             team2.roundWins += 13;
-            team2.roundLosses += 9;
-            team1.roundWins += 9;
+            team2.roundLosses += 7;
+            team1.roundWins += 7;
             team1.roundLosses += 13;
           }
         }
@@ -97,19 +97,19 @@ export function calculateStandings(teams: Team[], matches: MatchWithTeams[]): Te
         // Calculate per individual map
         const totalMaps = team1Score + team2Score;
         
-        // For each map, determine winner and apply 13-9 scoring
+        // For each map, determine winner and apply 13-7 scoring
         for (let map = 0; map < totalMaps; map++) {
           if (map < team2Score) {
             // Team 2 won 
             team2.roundWins += 13;
-            team2.roundLosses += 9;
-            team1.roundWins += 9;
+            team2.roundLosses += 7;
+            team1.roundWins += 7;
             team1.roundLosses += 13;
           } else {
             // Team 1 won 
             team1.roundWins += 13;
-            team1.roundLosses += 9;
-            team2.roundWins += 9;
+            team1.roundLosses += 7;
+            team2.roundWins += 7;
             team2.roundLosses += 13;
           }
         }
@@ -126,19 +126,19 @@ export function calculateStandings(teams: Team[], matches: MatchWithTeams[]): Te
         // Calculate per individual map
         const totalMaps = team1Score + team2Score;
         
-        // For each map, determine winner and apply 13-9 scoring
+        // For each map, determine winner and apply 13-7 scoring
         for (let map = 0; map < totalMaps; map++) {
           if (map < team1Score) {
             // Team 1 won 
             team1.roundWins += 13;
-            team1.roundLosses += 9;
-            team2.roundWins += 9;
+            team1.roundLosses += 7;
+            team2.roundWins += 7;
             team2.roundLosses += 13;
           } else {
             // Team 2 won 
             team2.roundWins += 13;
-            team2.roundLosses += 9;
-            team1.roundWins += 9;
+            team2.roundLosses += 7;
+            team1.roundWins += 7;
             team1.roundLosses += 13;
           }
         }
