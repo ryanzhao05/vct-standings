@@ -215,22 +215,27 @@ export function calculateStandings(teams: Team[], matches: MatchWithTeams[]): Te
     // Helper function to apply tiebreakers between two teams
   const applyTiebreakers = (a: TeamStanding, b: TeamStanding): number => {
     const h2hStats = getHeadToHeadStats(a.id, b.id);
-    if (h2hStats.team1Wins > 0) {
-      return -1; // Team A wins
-    } else if (h2hStats.team1Wins === 0 && h2hStats.team1MapDiff !== 0) {
-      return 1; // Team A loses
+    
+    // Only use head-to-head if teams have actually played each other
+    if (h2hStats.team1Wins > 0 || h2hStats.team1MapDiff !== 0 || h2hStats.team1RoundDiff !== 0) {
+      if (h2hStats.team1Wins > 0) {
+        return -1; // Team A wins
+      } else if (h2hStats.team1Wins === 0 && h2hStats.team1MapDiff !== 0) {
+        return 1; // Team A loses
+      }
+      
+      // Head-to-head Map Differential
+      if (h2hStats.team1MapDiff !== 0) {
+        return h2hStats.team1MapDiff;
+      }
+      
+      // Head-to-head Round Differential
+      if (h2hStats.team1RoundDiff !== 0) {
+        return h2hStats.team1RoundDiff;
+      }
     }
     
-    // Head-to-head Map Differential
-    if (h2hStats.team1MapDiff !== 0) {
-      return h2hStats.team1MapDiff;
-    }
-    
-    // Head-to-head Round Differential
-    if (h2hStats.team1RoundDiff !== 0) {
-      return h2hStats.team1RoundDiff;
-    }
-    
+    // If no head-to-head data use overall differentials
     // Map Differential
     const aMapDiff = a.mapWins - a.mapLosses;
     const bMapDiff = b.mapWins - b.mapLosses;
@@ -272,50 +277,72 @@ export function calculateStandings(teams: Team[], matches: MatchWithTeams[]): Te
       return result <= 0 ? teams : [teams[1], teams[0]];
     }
 
-    // For 3+ teams, find subgroups
-    const subgroups: TeamStanding[][] = [];
-    const processed = new Set<number>();
+    // For 3+ teams, find the clearly highest ranked team
+    const getCriterionValue = (team: TeamStanding): number => {
+      switch (criterion) {
+        case 'match':
+          // Calculate overall head-to-head record against all other teams
+          let wins = 0, losses = 0, totalMatches = 0;
+          for (const otherTeam of teams) {
+            if (otherTeam.id === team.id) continue;
+            const h2hMatches = getHeadToHeadMatches(team.id, otherTeam.id);
+            if (h2hMatches.length > 0) {
+              totalMatches++;
+              const h2hScore = getH2HMatchScore(team, otherTeam);
+              if (h2hScore > 0) wins++;
+              else if (h2hScore < 0) losses++;
+            }
+          }
 
-    for (let i = 0; i < teams.length; i++) {
-      if (processed.has(teams[i].id)) continue;
-
-      const subgroup = [teams[i]];
-      processed.add(teams[i].id);
-
-      // Find all teams that tie with this team
-      for (let j = i + 1; j < teams.length; j++) {
-        if (processed.has(teams[j].id)) continue;
-
-        let tie = false;
-        switch (criterion) {
-          case 'match':
-            tie = getH2HMatchScore(teams[i], teams[j]) === 0;
-            break;
-          case 'map':
-            tie = getH2HMapDiff(teams[i], teams[j]) === 0;
-            break;
-          case 'round':
-            tie = getH2HRoundDiff(teams[i], teams[j]) === 0;
-            break;
-          case 'overallMap':
-            tie = (teams[i].mapWins - teams[i].mapLosses) === (teams[j].mapWins - teams[j].mapLosses);
-            break;
-          case 'overallRound':
-            tie = (teams[i].roundWins - teams[i].roundLosses) === (teams[j].roundWins - teams[j].roundLosses);
-            break;
-        }
-
-        if (tie) {
-          subgroup.push(teams[j]);
-          processed.add(teams[j].id);
-        }
+          return totalMatches > 0 ? wins - losses : 0;
+        case 'map':
+          // Calculate overall head-to-head map differential
+          let mapDiff = 0, hasMapMatches = false;
+          for (const otherTeam of teams) {
+            if (otherTeam.id === team.id) continue;
+            const h2hMatches = getHeadToHeadMatches(team.id, otherTeam.id);
+            if (h2hMatches.length > 0) {
+              hasMapMatches = true;
+              mapDiff += getH2HMapDiff(team, otherTeam);
+            }
+          }
+          return hasMapMatches ? mapDiff : 0;
+        case 'round':
+          // Calculate overall head-to-head round differential
+          let roundDiff = 0, hasRoundMatches = false;
+          for (const otherTeam of teams) {
+            if (otherTeam.id === team.id) continue;
+            const h2hMatches = getHeadToHeadMatches(team.id, otherTeam.id);
+            if (h2hMatches.length > 0) {
+              hasRoundMatches = true;
+              roundDiff += getH2HRoundDiff(team, otherTeam);
+            }
+          }
+          return hasRoundMatches ? roundDiff : 0;
+        case 'overallMap':
+          return team.mapWins - team.mapLosses;
+        case 'overallRound':
+          return team.roundWins - team.roundLosses;
+        default:
+          return 0;
       }
+    };
 
-      subgroups.push(subgroup);
-    }
+    // Calculate criterion values for all teams
+    const teamValues = teams.map(team => ({
+      team,
+      value: getCriterionValue(team)
+    }));
+
+    // Find the maximum value
+    const maxValue = Math.max(...teamValues.map(tv => tv.value));
+    
+    // Find all teams with the maximum value (the top subgroup)
+    const topTeams = teamValues.filter(tv => tv.value === maxValue).map(tv => tv.team);
+    const remainingTeams = teamValues.filter(tv => tv.value < maxValue).map(tv => tv.team);
 
     // If we can't create subgroups, move to next category
-    if (subgroups.length === 1) {
+    if (remainingTeams.length === 0 || maxValue === 0) {
       const nextCriterion = criterion === 'match' ? 'map' : 
                            criterion === 'map' ? 'round' : 
                            criterion === 'round' ? 'overallMap' : 
@@ -327,13 +354,13 @@ export function calculateStandings(teams: Team[], matches: MatchWithTeams[]): Te
       return teams; 
     }
 
-    // Sort subgroups and recursively apply tiebreakers
-    const sortedSubgroups = subgroups.map(subgroup => {
-      if (subgroup.length === 1) return subgroup;
-      return applySubgroupTiebreaker(subgroup, 'match'); // Start from beginning for each subgroup
-    });
+    // Sort the top subgroup and remaining subgroup separately
+    const sortedTopTeams = topTeams.length === 1 ? topTeams : 
+                          applySubgroupTiebreaker(topTeams, 'match');
+    const sortedRemainingTeams = remainingTeams.length === 1 ? remainingTeams : 
+                                applySubgroupTiebreaker(remainingTeams, 'match');
 
-    return sortedSubgroups.flat();
+    return [...sortedTopTeams, ...sortedRemainingTeams];
   };
 
   standingsArray.sort((a, b) => {
@@ -380,7 +407,8 @@ export function calculateStandings(teams: Team[], matches: MatchWithTeams[]): Te
     if (j - i > 2) {
       // 3+ teams tied, apply subgroup tiebreaker
       const tiedTeams = standingsArray.slice(i, j);
-      const sortedTiedTeams = applySubgroupTiebreaker(tiedTeams, 'match');
+      // Start with overall map differential instead of head-to-head
+      const sortedTiedTeams = applySubgroupTiebreaker(tiedTeams, 'overallMap');
       
       // Replace the tied teams with sorted result
       for (let k = 0; k < sortedTiedTeams.length; k++) {
