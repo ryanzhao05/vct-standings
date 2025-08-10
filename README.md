@@ -7,10 +7,9 @@ An interactive **Valorant Champions Tour (VCT) standings simulator** that lets f
 ## ✨ Features
 
 - **Multi-Region Support**: Americas, EMEA, Pacific, and China regions
-- **Real-Time Predictions**: Input match scores and see instant standings updates
-- **Dynamic Standings**: Watch team positions change as you adjust predictions
+- **Real-Time Predictions**: Input match scores and see instant standings updates as you adjust predictions
 - **Share Predictions**: Generate shareable links with your match predictions
-- **Local Storage**: Save predictions locally for each region
+- **Local Storage**: Predictions save locally for each region
 - **Responsive Design**: Mobile-friendly interface 
 - **Live Data Sync**: Updates from PandaScore API
 
@@ -35,4 +34,4 @@ An interactive **Valorant Champions Tour (VCT) standings simulator** that lets f
 
 ## 👨‍💻 Developer
 
-- **Ryan Zhao** - Made with ❤️
+**Ryan Zhao**
