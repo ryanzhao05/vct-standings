@@ -407,8 +407,8 @@ export function calculateStandings(teams: Team[], matches: MatchWithTeams[]): Te
     if (j - i > 2) {
       // 3+ teams tied, apply subgroup tiebreaker
       const tiedTeams = standingsArray.slice(i, j);
-      // Start with overall map differential instead of head-to-head
-      const sortedTiedTeams = applySubgroupTiebreaker(tiedTeams, 'overallMap');
+      // Start with head-to-head match score
+      const sortedTiedTeams = applySubgroupTiebreaker(tiedTeams, 'match');
       
       // Replace the tied teams with sorted result
       for (let k = 0; k < sortedTiedTeams.length; k++) {
