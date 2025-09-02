@@ -1,6 +1,6 @@
 import { Team, MatchWithTeams } from './supabase';
 
-interface TeamStanding {
+export interface TeamStanding {
   id: number;
   name: string;
   abbreviation?: string;

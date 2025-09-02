@@ -6,6 +6,7 @@ interface HeaderProps {
   onResetAll: () => void;
   onShareLink: () => void;
   onContactClick: () => void;
+  isResimulating?: boolean;
 }
 
 export default function Header({
@@ -13,6 +14,7 @@ export default function Header({
   onResetAll,
   onShareLink,
   onContactClick,
+  isResimulating = false,
 }: HeaderProps) {
   return (
     <header className="border-b border-border bg-card">
@@ -55,6 +57,13 @@ export default function Header({
             <p className="text-gray-200 font-semibold mt-1 text-sm lg:text-base">
               2025 {selectedRegion} Stage 2
             </p>
+            {isResimulating && (
+              <div className="mt-2 p-2 bg-blue-900/20 border border-blue-700/30 rounded-lg">
+                <p className="text-blue-300 text-xs lg:text-sm font-medium">
+                  🔮 Simulating VCT 2025 Stage 2
+                </p>
+              </div>
+            )}
           </div>
           <div className="flex flex-col sm:flex-row gap-2 lg:gap-3">
             <button

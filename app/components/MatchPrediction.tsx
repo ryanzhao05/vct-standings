@@ -43,23 +43,10 @@ export default function MatchPrediction({
       newTeam2Score = newScore;
     }
 
-    // Game not yet played
-    if (newTeam1Score === 0 && newTeam2Score === 0) {
-      onScoreChange(newTeam1Score, newTeam2Score);
-      return;
-    }
-
-    if (newTeam1Score === 1 && newTeam2Score === 1) {
-      onScoreChange(newTeam1Score, newTeam2Score);
-      return;
-    }
-
-    // Check if both teams have 2 wins (impossible in BO3)
     if (newTeam1Score === 2 && newTeam2Score === 2) {
       return; // Don't allow both teams to have 2 wins
     }
 
-    // If we get here, the combination is valid
     onScoreChange(newTeam1Score, newTeam2Score);
   };
 
@@ -102,7 +89,7 @@ export default function MatchPrediction({
           <div className="flex items-center justify-center gap-1 lg:gap-2">
             <button
               onClick={() => handleScoreChange("team1", team1Score - 1)}
-              disabled={team1Score <= 0 || isCompleted}
+              disabled={isCompleted}
               className="w-6 h-6 lg:w-8 lg:h-8 bg-background text-foreground rounded flex items-center justify-center hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer text-xs lg:text-sm"
             >
               -
@@ -158,7 +145,7 @@ export default function MatchPrediction({
           <div className="flex items-center justify-center gap-1 lg:gap-2">
             <button
               onClick={() => handleScoreChange("team2", team2Score - 1)}
-              disabled={team2Score <= 0 || isCompleted}
+              disabled={isCompleted}
               className="w-6 h-6 lg:w-8 lg:h-8 bg-background text-foreground rounded flex items-center justify-center hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer text-xs lg:text-sm"
             >
               -

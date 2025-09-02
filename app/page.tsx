@@ -7,7 +7,9 @@ import StandingsTable from "./components/StandingsTable";
 import GroupMatches from "./components/GroupMatches";
 import Notification from "./components/Notification";
 import ContactModal from "./components/ContactModal";
+import EndOfSeasonModal from "./components/EndOfSeasonModal";
 import { calculateStandings } from "../lib/standings-calculator";
+import type { TeamStanding } from "../lib/standings-calculator";
 import {
   getTeamsByRegion,
   getMatchesByRegion,
@@ -44,6 +46,8 @@ export default function Home() {
     isVisible: boolean;
   }>({ message: "", type: "success", isVisible: false });
   const [showContactModal, setShowContactModal] = useState(false);
+  const [showEndOfSeasonModal, setShowEndOfSeasonModal] = useState(false);
+  const [isResimulating, setIsResimulating] = useState(false);
 
   const regions = [
     { id: "americas", name: "Americas" },
@@ -51,6 +55,26 @@ export default function Home() {
     { id: "pacific", name: "Pacific" },
     { id: "china", name: "China" },
   ] as const;
+
+  useEffect(() => {
+    setShowEndOfSeasonModal(true);
+  }, []);
+
+  const handleViewCompleted = () => {
+    setShowEndOfSeasonModal(false);
+    setIsResimulating(false);
+  };
+
+  const handleResimulate = () => {
+    setShowEndOfSeasonModal(false);
+    setIsResimulating(true);
+
+    // Clear all predictions for all regions to start fresh
+    regions.forEach((region) => {
+      deleteAllPredictions(region.id);
+    });
+    setPredictions({});
+  };
 
   // Preload data for other regions in the background
   useEffect(() => {
@@ -173,30 +197,47 @@ export default function Home() {
   const groupAlphaTeams = teams.filter((team) => team.group_name === "alpha");
   const groupOmegaTeams = teams.filter((team) => team.group_name === "omega");
 
+  // Filter matches based on resimulation mode
+  const getFilteredMatches = (allMatches: MatchWithTeams[]) => {
+    if (isResimulating) {
+      return allMatches.map((match) => ({
+        ...match,
+        team1_score: 0,
+        team2_score: 0,
+        is_completed: false,
+      }));
+    }
+
+    return allMatches;
+  };
+
   // Group matches by their group and merge with user predictions
-  const groupAlphaMatches = matches
-    .filter((match) =>
+  const groupAlphaMatches = getFilteredMatches(
+    matches.filter((match) =>
       groupAlphaTeams.some(
         (team) => team.id === match.team1_id || team.id === match.team2_id
       )
     )
-    .map((match) => ({
-      ...match,
-      team1_score: predictions[match.id]?.team1Score ?? match.team1_score,
-      team2_score: predictions[match.id]?.team2Score ?? match.team2_score,
-    }));
+  ).map((match) => ({
+    ...match,
+    team1_score: predictions[match.id]?.team1Score ?? match.team1_score,
+    team2_score: predictions[match.id]?.team2Score ?? match.team2_score,
 
-  const groupOmegaMatches = matches
-    .filter((match) =>
+    is_completed: isResimulating ? false : match.is_completed,
+  }));
+
+  const groupOmegaMatches = getFilteredMatches(
+    matches.filter((match) =>
       groupOmegaTeams.some(
         (team) => team.id === match.team1_id || team.id === match.team2_id
       )
     )
-    .map((match) => ({
-      ...match,
-      team1_score: predictions[match.id]?.team1Score ?? match.team1_score,
-      team2_score: predictions[match.id]?.team2Score ?? match.team2_score,
-    }));
+  ).map((match) => ({
+    ...match,
+    team1_score: predictions[match.id]?.team1Score ?? match.team1_score,
+    team2_score: predictions[match.id]?.team2Score ?? match.team2_score,
+    is_completed: isResimulating ? false : match.is_completed,
+  }));
 
   // Calculate predictions per group
   const getGroupPredictions = (groupMatches: MatchWithTeams[]) => {
@@ -211,13 +252,24 @@ export default function Home() {
   const groupAlphaPredictionCount = getGroupPredictions(groupAlphaMatches);
   const groupOmegaPredictionCount = getGroupPredictions(groupOmegaMatches);
 
+  // In resimulation mode, reset team round counts to 0
+  const getResimulatedTeams = (teams: Team[]) => {
+    if (!isResimulating) return teams;
+
+    return teams.map((team) => ({
+      ...team,
+      rounds_won: 0,
+      rounds_lost: 0,
+    }));
+  };
+
   // Calculate standings based on current match predictions
   const groupAlphaStandings = calculateStandings(
-    groupAlphaTeams,
+    getResimulatedTeams(groupAlphaTeams),
     groupAlphaMatches
   );
   const groupOmegaStandings = calculateStandings(
-    groupOmegaTeams,
+    getResimulatedTeams(groupOmegaTeams),
     groupOmegaMatches
   );
 
@@ -356,6 +408,7 @@ export default function Home() {
         onResetAll={handleResetAll}
         onShareLink={handleShareLink}
         onContactClick={() => setShowContactModal(true)}
+        isResimulating={isResimulating}
       />
 
       <RegionTabs
@@ -428,6 +481,13 @@ export default function Home() {
       <ContactModal
         isOpen={showContactModal}
         onClose={() => setShowContactModal(false)}
+      />
+
+      <EndOfSeasonModal
+        isOpen={showEndOfSeasonModal}
+        onClose={() => setShowEndOfSeasonModal(false)}
+        onViewCompleted={handleViewCompleted}
+        onResimulate={handleResimulate}
       />
 
       <footer className="border-t border-border bg-card mt-8">
