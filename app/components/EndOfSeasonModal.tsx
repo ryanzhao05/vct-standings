@@ -65,7 +65,7 @@ export default function EndOfSeasonModal({
             </p>
             <p>
               While the split is over, you can still jump back to week 1 and
-              explore "what if" scenarios.
+              explore &ldquo;what if&rdquo; scenarios.
             </p>
 
             <p>
@@ -73,8 +73,8 @@ export default function EndOfSeasonModal({
               in the near future, so stay tuned for the next split!
             </p>
             <p>
-              In the mean time, feel free to contact me with the "Contact"
-              button in the header :)
+              In the mean time, feel free to contact me with the
+              &ldquo;Contact&rdquo; button in the header :)
             </p>
           </div>
 
